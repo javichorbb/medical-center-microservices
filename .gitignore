@@ -1,0 +1,26 @@
+# Compilación y paquetes Java/Maven
+**/target/
+*.jar
+*.war
+*.class
+
+# Entornos de desarrollo (IDE)
+**/.idea/
+**/*.iml
+**/.project
+**/.classpath
+**/.settings/
+**/.factorypath
+**/.vscode/
+
+# Logs y bases de datos embebidas locales (H2)
+**/data/*.db
+**/data/*.mv.db
+**/data/*.trace.db
+*.log
+
+# Archivos de sistema operativo
+Thumbs.db
+ehthumbs.db
+.DS_Store
+
