@@ -24,11 +24,15 @@ El sistema abarca 4 procesos clave de negocio:
 ### 2. Backend - Proceso 2 (Solicitud de Cita Médica)
 | Microservicio | Tipo | Puerto | Descripción |
 |---|---|:---:|---|
-| **MicroCompCita** (`CitamedicaMicroCompCita`) | Orquestador / Composite | `9999` | Orquesta la consulta, validación y reserva |
+| **MicroCompCita** (`CitamedicaMicroCompCita`) | Orquestador / Composite | `9999` | Orquesta la consulta, validación y reserva ([Swagger UI](http://localhost:9999/swagger-ui/index.html)) |
 | **MicroCatalogoMedico** | Servicio de Dominio | `8080` | Gestión y consulta de médicos por especialidad |
 | **MicroCatalogoHorario** | Servicio de Dominio | `8081` | Consulta de fechas, turnos e intervalos de atención |
 | **MicroValidar** | Servicio de Dominio | `8082` | Validación previa del paciente para reservar |
 | **MicroRegistroCita** | Servicio Transaccional | `8083` | Generación y almacenamiento de la cita médica |
+
+> 📌 **Documentación Interactiva (Swagger / OpenAPI):**  
+> Al iniciar el servicio orquestador (`MicroCompCita`), puedes acceder a la consola interactiva de Swagger para probar todas las APIs en:  
+> 👉 [http://localhost:9999/swagger-ui/index.html](http://localhost:9999/swagger-ui/index.html)
 
 ### 3. Frontend / Vistas Web - Proceso 2
 | Aplicación Web | Puerto | Rol |
