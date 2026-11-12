@@ -7,7 +7,7 @@ Sistema integral para la gestión de un **Centro Médico** implementado bajo el 
 ## 🏥 Procesos de Negocio del Centro Médico
 
 El sistema abarca 4 procesos clave de negocio:
-1. **Proceso 1:** Programación de horarios de atención de médicos *(En desarrollo)*.
+1. **Proceso 1 (Implementado):** Programación de horarios de atención de médicos.
 2. **Proceso 2 (Implementado):** Solicitud de cita médica.
 3. **Proceso 3:** Atención médica, diagnóstico, recetas y análisis clínicos *(En desarrollo)*.
 4. **Proceso 4:** Historia clínica y registro inicial de pacientes *(En desarrollo)*.
@@ -21,7 +21,20 @@ El sistema abarca 4 procesos clave de negocio:
 |---|---|:---:|---|
 | **CentroMedicoEurekaServer** | Service Discovery (Eureka) | `8761` | [http://localhost:8761](http://localhost:8761) |
 
-### 2. Backend - Proceso 2 (Solicitud de Cita Médica)
+### 2. Backend - Proceso 1 (Programación de Horarios de Médicos)
+| Microservicio | Tipo | Puerto | Descripción |
+|---|---|:---:|---|
+| **MicroCompProgramacionHorario** | Orquestador / Composite | `8019` | Orquesta el login asistencial, programación y franjas ([Swagger UI](http://localhost:8019/swagger-ui/index.html)) |
+| **MicroValidarUsuario** | Servicio de Dominio | `8010` | Autenticación y gestión de usuarios administradores/asistenciales |
+| **MicroMedico** | Servicio de Dominio | `8011` | Catálogo de médicos y especialidades |
+| **MicroProgramacionHorario** | Servicio de Dominio | `8012` | Registro y gestión de programaciones (fechas/consultorios) |
+| **MicroFranjaHoraria** | Servicio de Dominio | `8013` | Gestión de franjas horarias individuales (máx. 20 min) |
+
+> 📌 **Documentación Interactiva Proceso 1 (Swagger / OpenAPI):**  
+> Al iniciar el servicio orquestador (`MicroCompProgramacionHorario`), puedes probar todos los endpoints del backend desde:  
+> 👉 [http://localhost:8019/swagger-ui/index.html](http://localhost:8019/swagger-ui/index.html)
+
+### 3. Backend - Proceso 2 (Solicitud de Cita Médica)
 | Microservicio | Tipo | Puerto | Descripción |
 |---|---|:---:|---|
 | **MicroCompCita** (`CitamedicaMicroCompCita`) | Orquestador / Composite | `9999` | Orquesta la consulta, validación y reserva ([Swagger UI](http://localhost:9999/swagger-ui/index.html)) |
@@ -30,18 +43,9 @@ El sistema abarca 4 procesos clave de negocio:
 | **MicroValidar** | Servicio de Dominio | `8082` | Validación previa del paciente para reservar |
 | **MicroRegistroCita** | Servicio Transaccional | `8083` | Generación y almacenamiento de la cita médica |
 
-> 📌 **Documentación Interactiva (Swagger / OpenAPI):**  
+> 📌 **Documentación Interactiva Proceso 2 (Swagger / OpenAPI):**  
 > Al iniciar el servicio orquestador (`MicroCompCita`), puedes acceder a la consola interactiva de Swagger para probar todas las APIs en:  
 > 👉 [http://localhost:9999/swagger-ui/index.html](http://localhost:9999/swagger-ui/index.html)
-
-### 3. Frontend / Vistas Web - Proceso 2
-| Aplicación Web | Puerto | Rol |
-|---|---|:---:|
-| **VistaCitaMedica** | `9090` | **Portal principal** de reserva de cita médica |
-| **VistaCatalogoMedico** | `8090` | Interfaz de selección de médico especialista |
-| **VistaCatalogoHorario** | `8091` | Interfaz de selección de horario disponible |
-| **VistaValidar** | `8092` | Interfaz de validación de identidad del paciente |
-| **VistaRegistroCita** | `8093` | Interfaz de confirmación y resumen de la cita |
 
 ---
 
@@ -50,17 +54,32 @@ El sistema abarca 4 procesos clave de negocio:
 ### Prerrequisitos
 - **Java 17** o superior
 - **Maven 3.8+**
-- Navegador web moderno
+- Navegador web moderno / Postman o Swagger UI
 
 ### Orden de Inicio Recomendado
-1. **Paso 1: Levantar el Servidor Eureka**
-   - Iniciar `CentroMedicoEurekaServer` (Puerto `8761`).
-   - Verificar en [http://localhost:8761](http://localhost:8761) que el panel de control esté activo.
-2. **Paso 2: Iniciar los Microservicios Backend**
-   - Ejecutar en cualquier orden: `MicroCatalogoMedico` (8080), `MicroCatalogoHorario` (8081), `MicroValidar` (8082), `MicroRegistroCita` (8083).
-   - Iniciar el orquestador: `CitamedicaMicroCompCita` (9999).
-   - Verificar en el panel de Eureka que todos aparezcan en estado `UP`.
-3. **Paso 3: Iniciar la Capa de Vistas**
-   - Iniciar `VistaCitaMedica` (Puerto `9090`).
-   - Acceder desde el navegador a `http://localhost:9090` para realizar el flujo de reserva de cita.
 
+#### Paso 1: Levantar el Servidor de Descubrimiento (Eureka)
+- Iniciar `CentroMedicoEurekaServer` (Puerto `8761`).
+- Verificar en [http://localhost:8761](http://localhost:8761) que el panel de control de Eureka esté activo.
+
+#### Paso 2: Ejecutar Proceso 1 - Programación de Horarios (Backend)
+1. **Servicios de Dominio** (en cualquier orden):
+   - `ProgramacionHorarioMicroValidarUsuario` (Puerto `8010`)
+   - `ProgramacionHorarioMicroMedico` (Puerto `8011`)
+   - `ProgramacionHorarioMicroProgramacionHorario` (Puerto `8012`)
+   - `ProgramacionHorarioMicroFranjaHoraria` (Puerto `8013`)
+2. **Servicio Orquestador**:
+   - `MicroCompProgramacionHorario` (Puerto `8019`)
+3. **Pruebas y Verificación**:
+   - Acceder a Swagger UI: [http://localhost:8019/swagger-ui/index.html](http://localhost:8019/swagger-ui/index.html) para probar todos los endpoints REST.
+
+#### Paso 3: Ejecutar Proceso 2 - Solicitud de Citas Médicas (Backend)
+1. **Servicios de Dominio** (en cualquier orden):
+   - `MicroCatalogoMedico` (Puerto `8080`)
+   - `MicroCatalogoHorario` (Puerto `8081`)
+   - `MicroValidar` (Puerto `8082`)
+   - `MicroRegistroCita` (Puerto `8083`)
+2. **Servicio Orquestador**:
+   - `CitamedicaMicroCompCita` (Puerto `9999`)
+3. **Pruebas y Verificación**:
+   - Acceder a Swagger UI: [http://localhost:9999/swagger-ui/index.html](http://localhost:9999/swagger-ui/index.html) para probar todos los endpoints REST.

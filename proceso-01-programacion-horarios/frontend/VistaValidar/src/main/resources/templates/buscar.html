@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Buscar Usuario</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h2>Buscar Usuario por ID</h2>
+        <form action="/buscar" method="get">
+            <label>ID de Usuario:</label>
+            <input type="number" name="id" required>
+            <button type="submit">Buscar</button>
+        </form>
+        <br>
+
+        <div th:if="${resultado != null}">
+            <h3>Resultado:</h3>
+            <p><strong>ID:</strong> <span th:text="${resultado.idUsu}"></span></p>
+            <p><strong>Nombre:</strong> <span th:text="${resultado.nom}"></span></p>
+            <p><strong>Contraseña:</strong> <span th:text="${resultado.pas}"></span></p>
+        </div>
+
+        <div th:if="${param.id != null and resultado == null}">
+            <p>No se encontró un usuario con ese ID.</p>
+        </div>
+
+        <br>
+        <a href="/listar">Volver a la lista</a>
+    </body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Gestión de programaciones</title>
+    </head>
+    <body>
+
+        <h1>Gestión de programaciones médicas</h1>
+
+        <h2>Registrar programación</h2>
+
+        <!-- Formulario para registrar -->
+        <form th:if="${programacion.idProgramacion == null}"
+              th:action="@{/programacion/grabar}"
+              th:object="${programacion}"
+              method="post">
+
+            <label>Médico:</label>
+            <select th:field="*{idMed}" required>
+                <option value="">Seleccione un médico</option>
+                <option th:each="m : ${medicos}"
+                        th:value="${m.idMed}"
+                        th:text="${m.nom + ' - ' + m.especialidad}">
+                </option>
+            </select>
+
+            <br><br>
+
+            <label>Fecha:</label>
+            <input type="date" th:field="*{fec}" required>
+
+            <br><br>
+
+            <label>Estado:</label>
+            <select th:field="*{estado}" required>
+                <option value="Disponible">Disponible</option>
+                <option value="No disponible">No disponible</option>
+            </select>
+
+            <br><br>
+
+            <button type="submit">Guardar programación</button>
+        </form>
+
+        <!-- Formulario para actualizar -->
+        <form th:unless="${programacion.idProgramacion == null}"
+              th:action="@{/programacion/actualizar/{id}(id=${programacion.idProgramacion})}"
+              th:object="${programacion}"
+              method="post">
+
+            <label>ID:</label>
+            <input type="text" th:field="*{idProgramacion}" readonly>
+
+            <br><br>
+
+            <label>Médico:</label>
+            <select th:field="*{idMed}" required>
+                <option th:each="m : ${medicos}"
+                        th:value="${m.idMed}"
+                        th:text="${m.nom + ' - ' + m.especialidad}">
+                </option>
+            </select>
+
+            <br><br>
+
+            <label>Fecha:</label>
+            <input type="date" th:field="*{fec}" required>
+
+            <br><br>
+
+            <label>Estado:</label>
+            <select th:field="*{estado}" required>
+                <option value="Disponible">Disponible</option>
+                <option value="No disponible">No disponible</option>
+            </select>
+
+            <br><br>
+
+            <button type="submit">Actualizar programación</button>
+            <a th:href="@{/programacion}">Cancelar</a>
+        </form>
+
+        <hr>
+
+        <h2>Lista de programaciones</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID Médico</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="p : ${programaciones}">
+                    <td th:text="${p.idProgramacion}"></td>
+                    <td th:text="${p.idMed}"></td>
+                    <td th:text="${p.fec}"></td>
+                    <td th:text="${p.estado}"></td>
+                    <td>
+                        <a th:href="@{/programacion/editar/{id}(id=${p.idProgramacion})}">
+                            Editar
+                        </a>
+                        |
+                        <a th:href="@{/programacion/eliminar/{id}(id=${p.idProgramacion})}"
+                           onclick="return confirm('¿Deseas eliminar esta programación?')">
+                            Eliminar
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(programaciones)}">
+                    <td colspan="5">No hay programaciones registradas.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <a th:href="@{/inicio}">Volver al menú principal</a>
+
+    </body>
+</html>

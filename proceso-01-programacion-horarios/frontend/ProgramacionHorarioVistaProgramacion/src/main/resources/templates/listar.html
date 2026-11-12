@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h2>Médicos Registrados</h2>
+        <a href="verGrabar">Registrar Nuevo Médico</a> | 
+        <a href="/buscar">Buscar por ID</a>
+        <br><br>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Especialidad</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m : ${lista}">
+                    <td th:text="${m.idMed}"></td>
+                    <td th:text="${m.nom}"></td>
+                    <td th:text="${m.especialidad}"></td>
+                    <td>
+                        <a th:href="@{/editar/{id}(id=${m.idMed})}">Editar</a> |
+                        <a th:href="@{/eliminar/{id}(id=${m.idMed})}">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

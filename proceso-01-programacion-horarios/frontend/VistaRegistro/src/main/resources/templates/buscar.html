@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Buscar Programación</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h2>Buscar Programación por ID</h2>
+        <form action="/buscar" method="get">
+            <label>ID de Programación:</label>
+            <input type="number" name="id" required>
+            <button type="submit">Buscar</button>
+        </form>
+        <br>
+
+        <div th:if="${resultado != null}">
+            <h3>Resultado:</h3>
+            <p><strong>ID:</strong> <span th:text="${resultado.idProgramacion}"></span></p>
+            <p><strong>Fecha:</strong> <span th:text="${resultado.fec}"></span></p>
+            <p><strong>Estado:</strong> <span th:text="${resultado.estado}"></span></p>
+        </div>
+
+        <div th:if="${param.id != null and resultado == null}">
+            <p>No se encontró una programación con ese ID.</p>
+        </div>
+
+        <br>
+        <a href="/listar">Volver a la lista</a>
+    </body>
+</html>

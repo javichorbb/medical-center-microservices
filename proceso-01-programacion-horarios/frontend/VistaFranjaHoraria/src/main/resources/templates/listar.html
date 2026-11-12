@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Listado de Franjas Horarias</title>
+    </head>
+    <body>
+
+        <h2>Franjas Horarias Generadas</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID Franja</th>
+                    <th>ID Programación</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="f : ${lista}">
+                    <td th:text="${f.idFranja}"></td>
+                    <td th:text="${f.idProgramacion}"></td>
+                    <td th:text="${f.horaInicio}"></td>
+                    <td th:text="${f.horaFin}"></td>
+                    <td>
+                        <a th:href="@{/editar/{id}(id=${f.idFranja})}">Editar</a>
+                        <a th:href="@{/eliminar/{id}(id=${f.idFranja})}">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <a th:href="@{/verGrabar}">Generar nuevas franjas</a>
+
+    </body>
+</html>

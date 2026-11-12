@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h2>Buscar Médico por ID</h2>
+        <form action="/buscar" method="get">
+            <label>ID Médico:</label>
+            <input type="number" name="id" required />
+            <button type="submit">Buscar</button>
+        </form>
+        <br>
+
+        <h2>Buscar médico por especialidad</h2>
+
+        <form action="/buscar" method="get">
+            <label>Especialidad:</label>
+            <input type="text" name="especialidad" required>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <h3>Médico encontrado:</h3>
+
+        <div th:if="${resultado != null}">
+            <p>ID: <span th:text="${resultado.idMed}"></span></p>
+            <p>Nombre: <span th:text="${resultado.nom}"></span></p>
+            <p>Especialidad: <span th:text="${resultado.especialidad}"></span></p>
+        </div>
+        
+        <h3>Resultados por especialidad:</h3>
+
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+            </tr>
+
+            <tr th:each="m : ${lista}">
+                <td th:text="${m.idMed}"></td>
+                <td th:text="${m.nom}"></td>
+                <td th:text="${m.especialidad}"></td>
+            </tr>
+        </table>
+
+        <br>
+        <a href="/listar">Volver a la lista</a>
+    </body>
+</html>

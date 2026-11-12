@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Programaciones Registradas</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h2>Programaciones Registradas</h2>
+        <a href="/verGrabar">Registrar Nueva Programación</a> |
+        <a href="/buscar">Buscar por ID</a>
+        <br><br>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${lista}">
+                    <td th:text="${p.idProgramacion}"></td>
+                    <td th:text="${p.fec}"></td>
+                    <td th:text="${p.estado}"></td>
+                    <td>
+                        <a th:href="@{/editar/{id}(id=${p.idProgramacion})}">Editar</a> |
+                        <a th:href="@{/eliminar/{id}(id=${p.idProgramacion})}">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

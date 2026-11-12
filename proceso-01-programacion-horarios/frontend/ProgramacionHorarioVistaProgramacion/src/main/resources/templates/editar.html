@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Editar Medico</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h1>Editar Medico</h1>
+        <form th:action="@{/actualizar/{id}(id=${med.idMed})}" th:object="${med}" method="post">
+            <label>Nombre</label>
+            <input type="text" th:field="*{nom}">
+            <br><br>
+            <label>Especialidad</label>
+            <input type="text" th:field="*{especialidad}">
+            <br><br>
+            <button type="submit">Actualizar</button>
+        </form>
+        <br>
+        <a href="/listar">Volver a la lista</a>
+    </body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Editar horario médico</title>
+</head>
+<body>
+
+    <h2>Editar horario médico</h2>
+
+    <form th:action="@{/actualizar/{id}(id=${det.idFranja})}"
+          th:object="${det}" method="post">
+
+        <label>ID Programación:</label>
+        <input type="number" th:field="*{idProgramacion}" readonly>
+        <br><br>
+
+        <label>Seleccione el horario:</label>
+
+        <select id="horario"
+                th:attr="data-inicio=${det.horaInicio},data-fin=${det.horaFin}"
+                required>
+            <option value="">Seleccione...</option>
+        </select>
+
+        <input type="hidden" th:field="*{horaInicio}" id="horaInicio">
+        <input type="hidden" th:field="*{horaFin}" id="horaFin">
+
+        <br><br>
+        <button type="submit">Guardar cambios</button>
+
+    </form>
+
+    <a th:href="@{/listar}">Regresar</a>
+
+    <script>
+        let horario = document.getElementById("horario");
+        let inicio = document.getElementById("horaInicio");
+        let fin = document.getElementById("horaFin");
+
+        let inicioActual = horario.dataset.inicio.substring(0, 5);
+        let finActual = horario.dataset.fin.substring(0, 5);
+
+        for (let hora = 8 * 60; hora < 18 * 60; hora += 20) {
+            let h1 = String(Math.floor(hora / 60)).padStart(2, "0") + ":" +
+                     String(hora % 60).padStart(2, "0");
+
+            let siguiente = hora + 20;
+
+            let h2 = String(Math.floor(siguiente / 60)).padStart(2, "0") + ":" +
+                     String(siguiente % 60).padStart(2, "0");
+
+            let opcion = document.createElement("option");
+            opcion.value = h1 + "|" + h2;
+            opcion.text = h1 + " - " + h2;
+
+            if (h1 === inicioActual && h2 === finActual) {
+                opcion.selected = true;
+            }
+
+            horario.appendChild(opcion);
+        }
+
+        horario.addEventListener("change", function() {
+            let horas = this.value.split("|");
+            inicio.value = horas[0];
+            fin.value = horas[1];
+        });
+
+        inicio.value = inicioActual;
+        fin.value = finActual;
+    </script>
+
+</body>
+</html>

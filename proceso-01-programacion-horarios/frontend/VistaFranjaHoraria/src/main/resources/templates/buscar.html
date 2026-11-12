@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Buscar Franja Horaria</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h2>Buscar Franja Horaria por ID</h2>
+        <form action="/buscar" method="get">
+            <label>ID de Franja:</label>
+            <input type="number" name="id" required>
+            <button type="submit">Buscar</button>
+        </form>
+        <br>
+
+        <div th:if="${resultado != null}">
+            <h3>Resultado:</h3>
+            <p><strong>ID:</strong> <span th:text="${resultado.idDet}"></span></p>
+            <p><strong>Consultorio:</strong> <span th:text="${resultado.consultorio}"></span></p>
+            <p><strong>Fecha de Atención:</strong> <span th:text="${resultado.fechaAtencion}"></span></p>
+        </div>
+
+        <div th:if="${param.id != null and resultado == null}">
+            <p>No se encontró una franja horaria con ese ID.</p>
+        </div>
+
+        <br>
+        <a href="/listar">Volver a la lista</a>
+    </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Usuarios Registrados</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h2>Usuarios Registrados</h2>
+        <a href="/verGrabar">Registrar Nuevo Usuario</a> |
+        <a href="/buscar">Buscar por ID</a> |
+        <a href="/">Volver al Login</a>
+        <br><br>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Contraseña</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${lista}">
+                    <td th:text="${u.idUsu}"></td>
+                    <td th:text="${u.nom}"></td>
+                    <td th:text="${u.pas}"></td>
+                    <td>
+                        <a th:href="@{/editar/{id}(id=${u.idUsu})}">Editar</a> |
+                        <a th:href="@{/eliminar/{id}(id=${u.idUsu})}">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

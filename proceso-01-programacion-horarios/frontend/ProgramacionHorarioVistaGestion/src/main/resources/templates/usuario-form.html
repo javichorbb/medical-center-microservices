@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Formulario de usuarios</title>
+    </head>
+    <body>
+
+        <h1>Registrar / Editar usuario</h1>
+
+        <!-- Registrar usuario -->
+        <form th:if="${usuario.idUsu == null}"
+              th:action="@{/usuarios/grabar}"
+              th:object="${usuario}"
+              method="post">
+
+            <label>Nombre de usuario:</label>
+            <input type="text" th:field="*{nom}" required>
+
+            <br><br>
+
+            <label>Contraseña:</label>
+            <input type="password" th:field="*{pas}" required>
+
+            <br><br>
+
+            <button type="submit">Guardar usuario</button>
+        </form>
+
+        <!-- Actualizar usuario -->
+        <form th:unless="${usuario.idUsu == null}"
+              th:action="@{/usuarios/actualizar/{id}(id=${usuario.idUsu})}"
+              th:object="${usuario}"
+              method="post">
+
+            <label>ID:</label>
+            <input type="text" th:field="*{idUsu}" readonly>
+
+            <br><br>
+
+            <label>Nombre de usuario:</label>
+            <input type="text" th:field="*{nom}" required>
+
+            <br><br>
+
+            <label>Nueva contraseña:</label>
+            <input type="password" th:field="*{pas}" required>
+
+            <br><br>
+
+            <button type="submit">Actualizar usuario</button>
+        </form>
+
+        <br>
+        <a th:href="@{/usuarios}">Volver a la lista</a>
+
+    </body>
+</html>

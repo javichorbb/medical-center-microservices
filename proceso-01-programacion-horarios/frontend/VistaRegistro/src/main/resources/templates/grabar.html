@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Grabar Programación</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h1>Grabar Programación</h1>
+        <form th:action="@{/grabar}" th:object="${pro}" method="post">
+            <label>Fecha:</label>
+            <input type="text" th:field="*{fec}" required>
+            <br><br>
+            <label>Estado:</label>
+            <input type="text" th:field="*{estado}" required>
+            <br><br>
+            <button type="submit">Grabar</button>
+        </form>
+        <br>
+        <a href="/listar">Ver Lista de Programaciones</a>
+    </body>
+</html>

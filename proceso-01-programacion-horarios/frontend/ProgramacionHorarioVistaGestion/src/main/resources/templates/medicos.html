@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Consultar médicos</title>
+    </head>
+    <body>
+
+        <h1>Lista de médicos</h1>
+
+        <a th:href="@{/medicos/nuevo}">
+            <button type="button">Registrar médico</button>
+        </a>
+
+        <br><br>
+
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Acciones</th>
+            </tr>
+
+            <tr th:each="m : ${lista}">
+                <td th:text="${m.idMed}"></td>
+                <td th:text="${m.nom}"></td>
+                <td th:text="${m.especialidad}"></td>
+                <td>
+                    <a th:href="@{/medicos/editar/{id}(id=${m.idMed})}">
+                        Editar
+                    </a>
+
+                    |
+
+                    <a th:href="@{/medicos/eliminar/{id}(id=${m.idMed})}"
+                       onclick="return confirm('¿Deseas eliminar este médico?')">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        <a th:href="@{/inicio}">Volver al menú</a>
+
+    </body>
+</html>

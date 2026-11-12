@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Registrar Franja Horaria</title>
+    </head>
+    <body>
+
+        <h2>Registrar Franja Horaria</h2>
+
+        <form th:action="@{/grabar}" th:object="${det}" method="post">
+
+            <label>ID de Programación:</label>
+            <input type="number" th:field="*{idProgramacion}" required>
+            <br><br>
+
+            <label>Seleccionar horario:</label>
+            <select id="horario" required>
+                <option value="">Seleccione un horario</option>
+            </select>
+
+            <input type="hidden" th:field="*{horaInicio}" id="horaInicio">
+            <input type="hidden" th:field="*{horaFin}" id="horaFin">
+
+            <br><br>
+            <button type="submit">Registrar franja</button>
+
+        </form>
+
+        <br>
+        <a th:href="@{/listar}">Ver franjas registradas</a>
+
+        <script>
+            const horario = document.getElementById("horario");
+            const inicio = document.getElementById("horaInicio");
+            const fin = document.getElementById("horaFin");
+
+            let hora = 8 * 60;
+            const limite = 18 * 60;
+
+            while (hora + 20 <= limite) {
+                let siguiente = hora + 20;
+
+                let h1 = String(Math.floor(hora / 60)).padStart(2, '0')
+                        + ":" + String(hora % 60).padStart(2, '0');
+
+                let h2 = String(Math.floor(siguiente / 60)).padStart(2, '0')
+                        + ":" + String(siguiente % 60).padStart(2, '0');
+
+                let opcion = document.createElement("option");
+                opcion.value = h1 + "|" + h2;
+                opcion.text = h1 + " - " + h2;
+
+                horario.appendChild(opcion);
+                hora = siguiente;
+            }
+
+            horario.addEventListener("change", function () {
+                if (this.value !== "") {
+                    let horas = this.value.split("|");
+                    inicio.value = horas[0];
+                    fin.value = horas[1];
+                } else {
+                    inicio.value = "";
+                    fin.value = "";
+                }
+            });
+        </script>
+
+    </body>
+</html>

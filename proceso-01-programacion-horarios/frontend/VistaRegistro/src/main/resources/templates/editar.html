@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Editar Programación</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h1>Editar Programación</h1>
+        <form th:action="@{/actualizar/{id}(id=${pro.idProgramacion})}" th:object="${pro}" method="post">
+            <label>Fecha:</label>
+            <input type="text" th:field="*{fec}" required>
+            <br><br>
+            <label>Estado:</label>
+            <input type="text" th:field="*{estado}" required>
+            <br><br>
+            <button type="submit">Actualizar</button>
+        </form>
+        <br>
+        <a href="/listar">Volver a la lista</a>
+    </body>
+</html>
