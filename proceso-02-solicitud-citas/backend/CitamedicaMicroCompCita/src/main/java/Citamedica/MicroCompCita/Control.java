@@ -49,4 +49,16 @@ public class Control {
     public SalidaCita registrarCita(@RequestBody EntradaCita ent) {
         return servicio.registrarCita(ent);
     }
+
+    // Endpoint: Consultar Cita Médica Detallada por su ID
+    @GetMapping("/cita/{idCita}")
+    public SalidaCita buscarCita(@PathVariable Long idCita) {
+        return servicio.buscarCita(idCita);
+    }
+
+    // Endpoint: Consultar Citas Médicas Detalladas de un Paciente por DNI
+    @GetMapping("/citas/dni/{dni}")
+    public List<SalidaCita> buscarCitasPorDni(@PathVariable String dni) {
+        return servicio.buscarCitasPorDni(dni);
+    }
 }

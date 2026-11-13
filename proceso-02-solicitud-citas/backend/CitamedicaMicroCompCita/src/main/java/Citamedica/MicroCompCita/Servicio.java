@@ -150,4 +150,86 @@ public class Servicio {
             horario
         );
     }
+
+    // Consultar una cita médica detallada por su ID
+    public SalidaCita buscarCita(Long idCita) {
+        if (idCita == null || idCita <= 0) {
+            return null;
+        }
+        try {
+            CitaMedica cita = rt.getForObject("http://MicroRegistroCita/buscar/" + idCita, CitaMedica.class);
+            if (cita == null) {
+                return null;
+            }
+            return armarSalidaCita(cita);
+        } catch (Exception e) {
+            System.err.println("Error al buscar cita por ID: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // Consultar todas las citas de un paciente por DNI
+    public List<SalidaCita> buscarCitasPorDni(String dni) {
+        if (dni == null || dni.trim().isEmpty()) {
+            return List.of();
+        }
+
+        Paciente paciente = validarPaciente(dni.trim());
+        if (paciente == null || paciente.getIdPaciente() == null) {
+            return List.of();
+        }
+
+        try {
+            CitaMedica[] citas = rt.getForObject("http://MicroRegistroCita/listar", CitaMedica[].class);
+            if (citas == null) {
+                return List.of();
+            }
+
+            List<SalidaCita> resultado = new java.util.ArrayList<>();
+            for (CitaMedica c : citas) {
+                if (paciente.getIdPaciente().equals(c.getIdPaciente())) {
+                    SalidaCita sc = armarSalidaCita(c);
+                    if (sc != null) {
+                        resultado.add(sc);
+                    }
+                }
+            }
+            return resultado;
+        } catch (Exception e) {
+            System.err.println("Error al listar citas por DNI: " + e.getMessage());
+            return List.of();
+        }
+    }
+
+    // Helper privado para componer SalidaCita con Paciente, Médico y Horario
+    private SalidaCita armarSalidaCita(CitaMedica cita) {
+        if (cita == null) {
+            return null;
+        }
+
+        Paciente paciente = null;
+        try {
+            paciente = rt.getForObject("http://MicroValidar/buscarPorId/" + cita.getIdPaciente(), Paciente.class);
+        } catch (Exception ignored) {}
+
+        Horario horario = null;
+        try {
+            horario = rt.getForObject("http://MicroCatalogoHorario/buscar/" + cita.getIdHorario(), Horario.class);
+        } catch (Exception ignored) {}
+
+        Medico medico = null;
+        if (horario != null && horario.getIdMedico() != null) {
+            try {
+                medico = rt.getForObject("http://MicroCatalogoMedico/buscar/" + horario.getIdMedico(), Medico.class);
+            } catch (Exception ignored) {}
+        }
+
+        return new SalidaCita(
+            cita.getIdCita(),
+            cita.getEstado(),
+            paciente,
+            medico,
+            horario
+        );
+    }
 }
