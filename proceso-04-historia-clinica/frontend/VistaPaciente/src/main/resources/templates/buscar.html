@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Paciente</title>
+</head>
+<body>
+    <h2>Búsqueda de Paciente por ID</h2>
+    
+    <!-- Formulario para ingresar el ID del paciente -->
+    <form th:action="@{/paciente/buscar}" method="get">
+        <label>ID Paciente (ej: PAC-001):</label>
+        <input type="text" name="id" required/>
+        <button type="submit">Buscar</button>
+    </form>
+    <br>
+
+    <!-- Muestra el resultado si se encontró un paciente -->
+    <div th:if="${paciente != null}">
+        <h3>Resultado de la Búsqueda:</h3>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <tr>
+                <th>ID</th>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Género</th>
+                <th>Teléfono</th>
+            </tr>
+            <tr>
+                <td th:text="${paciente.idPaciente}"></td>
+                <td th:text="${paciente.dni}"></td>
+                <td th:text="${paciente.nombre}"></td>
+                <td th:text="${paciente.apellido}"></td>
+                <td th:text="${paciente.genero}"></td>
+                <td th:text="${paciente.telefono}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <br><br>
+    <a th:href="@{/paciente/listar}">Volver a la lista</a>
+</body>
+</html>

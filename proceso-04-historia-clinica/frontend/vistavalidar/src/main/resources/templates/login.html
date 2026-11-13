@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Validar Enfermera</title>
+</head>
+<body>
+    <h2>Validación de Enfermera</h2>
+
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+
+    <form th:action="@{/validar/procesar}" th:object="${enfermera}" method="post">
+        <label>ID Enfermera:</label><br>
+        <input type="text" th:field="*{idEnfermera}" placeholder="Ej: ENF-001" required/><br><br>
+
+        <label>Contraseña:</label><br>
+        <input type="password" th:field="*{pass}" placeholder="Ej: 123456" required/><br><br>
+
+        <button type="submit">Validar / Ingresar</button>
+    </form>
+</body>
+</html>

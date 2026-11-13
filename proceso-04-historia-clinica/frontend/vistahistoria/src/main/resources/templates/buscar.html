@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Historia por Paciente</title>
+</head>
+<body>
+    <h2>Buscar Historias por ID Paciente</h2>
+
+    <form th:action="@{/historia/buscarPorPaciente}" method="post">
+        <label>ID Paciente:</label>
+        <input type="text" name="idPaciente" th:value="${idPacienteBuscado}" placeholder="Ej: PAC-001" required/>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <br>
+    <a th:href="@{/historia/listar}">Volver a la Lista</a>
+    <br><br>
+
+    <div th:if="${historias}">
+        <h3>Resultados:</h3>
+        <table border="1" th:if="${!historias.empty}">
+            <thead>
+                <tr>
+                    <th>ID Historia</th>
+                    <th>ID Paciente</th>
+                    <th>Fecha</th>
+                    <th>Diagnóstico</th>
+                    <th>Tratamiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="h : ${historias}">
+                    <td th:text="${h.idHistoria}"></td>
+                    <td th:text="${h.idPaciente}"></td>
+                    <td th:text="${h.fecha}"></td>
+                    <td th:text="${h.diagnostico}"></td>
+                    <td th:text="${h.tratamiento}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <p th:if="${historias.empty}">No se encontraron historias clínicas para el paciente especificado.</p>
+    </div>
+</body>
+</html>

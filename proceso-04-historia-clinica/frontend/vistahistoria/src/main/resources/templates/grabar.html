@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Historia Clínica</title>
+</head>
+<body>
+    <h2>Registrar Historia Clínica</h2>
+
+    <form th:action="@{/historia/grabar}" th:object="${historia}" method="post">
+        <label>ID Historia:</label><br>
+        <input type="text" th:field="*{idHistoria}" placeholder="Ej: HIS-003" required/><br><br>
+
+        <label>ID Paciente:</label><br>
+        <input type="text" th:field="*{idPaciente}" placeholder="Ej: PAC-001" required/><br><br>
+
+        <label>Fecha:</label><br>
+        <input type="date" th:field="*{fecha}" required/><br><br>
+
+        <label>Diagnóstico:</label><br>
+        <textarea th:field="*{diagnostico}" required></textarea><br><br>
+
+        <label>Tratamiento:</label><br>
+        <textarea th:field="*{tratamiento}" required></textarea><br><br>
+
+        <button type="submit">Guardar Historia</button>
+        <a th:href="@{/historia/listar}">Cancelar</a>
+    </form>
+</body>
+</html>

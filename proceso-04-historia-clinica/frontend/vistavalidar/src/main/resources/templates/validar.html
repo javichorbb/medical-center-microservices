@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenida</title>
+</head>
+<body>
+    <h2>Acceso Concedido</h2>
+    <p>Bienvenida(o), <b th:text="${enfermera.nombre} + ' ' + ${enfermera.apellido}"></b></p>
+    <p>ID: <span th:text="${enfermera.idEnfermera}"></span></p>
+    <p>DNI: <span th:text="${enfermera.dni}"></span></p>
+
+    <br>
+    <a th:href="@{/validar/login}">Cerrar Sesión</a>
+</body>
+</html>
