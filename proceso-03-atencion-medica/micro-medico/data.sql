@@ -1,0 +1,18 @@
+INSERT INTO medico (id_medico, nombre, especialidad) VALUES
+  (1,  'Dr. Carlos Ramírez López',    'Medicina General'),
+  (2,  'Dra. María Gómez Torres',     'Medicina General'),
+  (3,  'Dr. José Pérez Díaz',         'Medicina General'),
+  (4,  'Dra. Ana Silva Rojas',        'Pediatría'),
+  (5,  'Dr. Luis Torres Vega',        'Pediatría'),
+  (6,  'Dra. Patricia Vega Mendoza',  'Pediatría'),
+  (7,  'Dr. Jorge Ruiz Salazar',      'Cardiología'),
+  (8,  'Dra. Carmen Díaz Flores',     'Cardiología'),
+  (9,  'Dr. Ricardo Paredes Luna',    'Dermatología'),
+  (10, 'Dra. Sofía Herrera Cano',     'Dermatología'),
+  (11, 'Dr. Miguel Ángel Castro',     'Ginecología'),
+  (12, 'Dra. Lucía Fernández Ríos',   'Ginecología'),
+  (13, 'Dr. Pedro Salinas Mora',      'Traumatología'),
+  (14, 'Dra. Elena Vargas Pinto',     'Traumatología'),
+  (15, 'Dr. Andrés Molina Cruz',      'Oftalmología'),
+  (16, 'Dra. Rosa Chávez Núñez',      'Neurología');
+
