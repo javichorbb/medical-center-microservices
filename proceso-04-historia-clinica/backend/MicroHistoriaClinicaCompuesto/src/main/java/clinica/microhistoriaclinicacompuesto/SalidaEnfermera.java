@@ -1,4 +1,4 @@
-package clinica.microhistoria;
+package clinica.microhistoriaclinicacompuesto;
 
 public class SalidaEnfermera {
 

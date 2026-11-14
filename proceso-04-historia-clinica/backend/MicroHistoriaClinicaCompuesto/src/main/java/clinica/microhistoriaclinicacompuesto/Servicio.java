@@ -1,7 +1,7 @@
-package clinica.microhistoria;
+package clinica.microhistoriaclinicacompuesto;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class Servicio {
     }
 
     // 2. Registrar Paciente en su Primera Cita y Generar su Historia Clínica
-    public SalidaHistoriaCompleta registrarPaciente(EntradaPaciente ent) {
+    public SalidaHistoria registrarPaciente(EntradaPaciente ent) {
         if (ent == null || ent.getDni() == null || ent.getDni().isBlank()) {
             return null;
         }
@@ -69,8 +69,8 @@ public class Servicio {
         SalidaPaciente pacienteGuardado = mapearSalidaPaciente(nuevoPaciente);
         Long idPaciente = pacienteGuardado.getIdPaciente();
 
-        // Generar automáticamente su historia clínica en MicroHistoria con fecha de hoy
-        EntradaHistoria entradaHistoria = new EntradaHistoria(idPaciente, LocalDate.now());
+        // Generar automáticamente su historia clínica en MicroHistoria (la fecha se asigna automáticamente)
+        EntradaHistoria entradaHistoria = new EntradaHistoria(idPaciente);
         Map<?, ?> nuevaHistoria = restTemplate.postForObject(
                 "http://MICROHISTORIA/historia/registrar",
                 entradaHistoria,
@@ -85,11 +85,11 @@ public class Servicio {
         }
 
         // Retornar la nueva historia clínica aperturada (con lista de atenciones vacía)
-        return new SalidaHistoriaCompleta(idHistoria, fechaApertura != null ? fechaApertura : LocalDate.now(), pacienteGuardado, List.of());
+        return new SalidaHistoria(idHistoria, fechaApertura != null ? fechaApertura : LocalDate.now(), pacienteGuardado, List.of());
     }
 
     // 3. Obtener Historia Clínica Completa por DNI del Paciente
-    public SalidaHistoriaCompleta obtenerHistoriaPorDni(String dni) {
+    public SalidaHistoria obtenerHistoriaPorDni(String dni) {
         if (dni == null || dni.isBlank()) {
             return null;
         }
@@ -104,7 +104,7 @@ public class Servicio {
     }
 
     // 4. Obtener Historia Clínica Completa por ID de Paciente
-    public SalidaHistoriaCompleta obtenerHistoriaPorPaciente(Long idPaciente) {
+    public SalidaHistoria obtenerHistoriaPorPaciente(Long idPaciente) {
         if (idPaciente == null || idPaciente <= 0) {
             return null;
         }
@@ -118,41 +118,40 @@ public class Servicio {
         return armarHistoriaCompleta(idPaciente, paciente);
     }
 
-    // Método orquestador que consolida Paciente + Historia + Atenciones de Proceso 3
-    private SalidaHistoriaCompleta armarHistoriaCompleta(Long idPaciente, SalidaPaciente paciente) {
+    // Método orquestador que consolida Paciente + Historia + Atenciones de MicroAtencionMedica
+    private SalidaHistoria armarHistoriaCompleta(Long idPaciente, SalidaPaciente paciente) {
         Map<?, ?> datosHistoria = consultarMicroservicio("http://MICROHISTORIA/historia/paciente/" + idPaciente);
         if (datosHistoria == null || datosHistoria.isEmpty() || datosHistoria.get("idHistoria") == null) {
             datosHistoria = consultarMicroservicio("http://micro-historia/historia/paciente/" + idPaciente);
         }
 
         if (datosHistoria == null || datosHistoria.isEmpty() || datosHistoria.get("idHistoria") == null) {
-            return new SalidaHistoriaCompleta(null, null, paciente, List.of());
+            return new SalidaHistoria(null, null, paciente, List.of());
         }
 
         Long idHistoria = Long.valueOf(datosHistoria.get("idHistoria").toString());
         LocalDate fechaApertura = parsearFecha(datosHistoria.get("fechaApertura"));
 
-        // Consultar atenciones médicas enriquecidas al Proceso 3 (micro-atencion-compuesto)
-        List<?> atenciones = consultarAtencionesProceso3(idHistoria);
+        // Consultar atenciones médicas al microservicio local MicroAtencionMedica
+        List<AtencionMedica> atenciones = consultarAtencionesMedicas(idHistoria);
 
-        return new SalidaHistoriaCompleta(idHistoria, fechaApertura, paciente, atenciones);
+        return new SalidaHistoria(idHistoria, fechaApertura, paciente, atenciones);
     }
 
-    private List<?> consultarAtencionesProceso3(Long idHistoria) {
+    private List<AtencionMedica> consultarAtencionesMedicas(Long idHistoria) {
         try {
-            List<?> atenciones = restTemplate.getForObject(
-                    "http://micro-atencion-compuesto/atencion-compuesto/historia/" + idHistoria,
-                    List.class
+            AtencionMedica[] atenciones = restTemplate.getForObject(
+                    "http://MICROATENCIONMEDICA/atencion/historia/" + idHistoria,
+                    AtencionMedica[].class
             );
-            return atenciones != null ? atenciones : List.of();
+            return atenciones != null ? Arrays.asList(atenciones) : List.of();
         } catch (RestClientException ex) {
-            // Fallback directo a micro-atencion
             try {
-                List<?> atenciones = restTemplate.getForObject(
-                        "http://micro-atencion/atencion/historia/" + idHistoria,
-                        List.class
+                AtencionMedica[] atenciones = restTemplate.getForObject(
+                        "http://MicroAtencionMedica/atencion/historia/" + idHistoria,
+                        AtencionMedica[].class
                 );
-                return atenciones != null ? atenciones : List.of();
+                return atenciones != null ? Arrays.asList(atenciones) : List.of();
             } catch (RestClientException ignored) {
                 return List.of();
             }

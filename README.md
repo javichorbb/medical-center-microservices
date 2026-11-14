@@ -49,7 +49,8 @@ A continuación se listan todos los microservicios backend del sistema con sus p
 | **MicroHistoriaClinicaCompuesto** | Compuesto / Orquestador | `8049` | [http://localhost:8049/swagger-ui/index.html](http://localhost:8049/swagger-ui/index.html) |
 | **MicroValidarEnfermera** | Atómico (Dominio) | `8040` | [http://localhost:8040/swagger-ui/index.html](http://localhost:8040/swagger-ui/index.html) |
 | **MicroPaciente** | Atómico (Entidad) | `8041` | [http://localhost:8041/swagger-ui/index.html](http://localhost:8041/swagger-ui/index.html) |
-| **MicroHistoria** | Atómico (Entidad) | `8042` | [http://localhost:8042/swagger-ui/index.html](http://localhost:8042/swagger-ui/index.html) |
+| **MicroAtencionMedica** | Atómico (Consulta / Entidad) | `8042` | [http://localhost:8042/swagger-ui/index.html](http://localhost:8042/swagger-ui/index.html) |
+| **MicroHistoria** | Atómico (Entidad) | `8043` | [http://localhost:8043/swagger-ui/index.html](http://localhost:8043/swagger-ui/index.html) |
 
 ---
 
@@ -88,7 +89,7 @@ Requiere tener encendidos:
 9. `micro-atencion-compuesto` (Puerto `8036`) - Servicio orquestador.
 
 ### 4. Para Proceso 4 (`MicroHistoriaClinicaCompuesto` - Puerto `8049`)
-El servicio compuesto de historia clínica no solo orquesta sus servicios locales, sino que al consultar una historia clínica completa debe recuperar e integrar el historial de atenciones médicas enriquecidas del Proceso 3. Por lo tanto, requiere tener activos:
+El servicio compuesto de historia clínica funciona de forma autónoma e independiente dentro de su propio paquete de microservicios. Requiere tener activos:
 
 #### A. Infraestructura Base:
 1. `CentroMedicoEurekaServer` (Puerto `8761`) - Servidor de descubrimiento.
@@ -96,17 +97,11 @@ El servicio compuesto de historia clínica no solo orquesta sus servicios locale
 #### B. Servicios Propios del Proceso 4:
 2. `MicroValidarEnfermera` (Puerto `8040`) - Autenticación de enfermera.
 3. `MicroPaciente` (Puerto `8041`) - Consulta y registro de datos personales del paciente.
-4. `MicroHistoria` (Puerto `8042`) - Registro y consulta de la apertura de la historia clínica.
-5. `MicroHistoriaClinicaCompuesto` (Puerto `8049`) - Servicio orquestador.
+4. `MicroAtencionMedica` (Puerto `8042`) - Consulta de atenciones médicas asociadas a la historia (con sus recetas médicas y análisis clínicos).
+5. `MicroHistoria` (Puerto `8043`) - Registro y consulta de la apertura de la historia clínica.
+6. `MicroHistoriaClinicaCompuesto` (Puerto `8049`) - Servicio orquestador.
 
-#### C. Servicios Dependientes del Proceso 3 (para historial de atenciones enriquecidas):
-6. `micro-atencion-compuesto` (Puerto `8036`) - Invocado vía `/atencion-compuesto/historia/{idHistoria}`.
-7. `micro-atencion` (Puerto `8033`) - Provee las atenciones asociadas a la historia.
-8. `micro-medico` (Puerto `8031`) - Provee los datos del médico tratante para enriquecer la atención.
-9. `micro-medicamento` (Puerto `8034`) - Provee los nombres y presentaciones de los medicamentos recetados.
-10. `micro-analisis` (Puerto `8035`) - Provee las descripciones y tipos de análisis clínicos indicados.
-
-> ℹ️ **Comportamiento ante contingencia:** Si los microservicios del Proceso 3 (`8036`, `8033`, `8031`, `8034`, `8035`) no estuvieran disponibles, el compuesto `8049` responderá los datos personales del paciente y los datos de apertura de su historia clínica, manteniendo el campo de atenciones médicas como una lista vacía `[]`. Para obtener la historia clínica íntegra y completa con su historial médico, los 10 servicios deben estar activos.
+> ℹ️ **Autonomía del Proceso 4:** Para operar de forma independiente antes de la integración global de todos los procesos, el Proceso 4 cuenta con su propio microservicio local `MicroAtencionMedica` (puerto `8042`), permitiendo consultar el historial médico completo sin depender del Proceso 3.
 
 ---
 
@@ -345,7 +340,7 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 }
 ```
 
-#### 3. Consultar Historia Clínica Completa por DNI del Paciente (incluye paciente + fecha de apertura + historial de atenciones médicas enriquecidas del Proceso 3)
+#### 3. Consultar Historia Clínica Completa por DNI del Paciente (incluye paciente + fecha de apertura + historial de atenciones médicas con recetas y análisis clínicos)
 - **Método:** `GET`
 - **URL:** `http://localhost:8049/historia-compuesto/dni/72345678`
 - **Request Body:** *(Sin cuerpo)*

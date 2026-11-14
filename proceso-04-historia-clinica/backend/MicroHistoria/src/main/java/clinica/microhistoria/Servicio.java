@@ -2,6 +2,7 @@ package clinica.microhistoria;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ public class Servicio {
     }
 
     public Historia registrar(Historia historia) {
+        historia.setFechaApertura(LocalDate.now());
         return repositorio.save(historia);
     }
 }

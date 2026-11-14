@@ -11,18 +11,18 @@ public class Paciente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPaciente;
-    private String dni;
     private String nombre;
+    private String dni;
     private String genero;
     private String telefono;
 
     public Paciente() {
     }
 
-    public Paciente(Long idPaciente, String dni, String nombre, String genero, String telefono) {
+    public Paciente(Long idPaciente, String nombre, String dni, String genero, String telefono) {
         this.idPaciente = idPaciente;
-        this.dni = dni;
         this.nombre = nombre;
+        this.dni = dni;
         this.genero = genero;
         this.telefono = telefono;
     }
@@ -35,20 +35,20 @@ public class Paciente {
         this.idPaciente = idPaciente;
     }
 
-    public String getDni() {
-        return dni;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
-
     public String getNombre() {
         return nombre;
     }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     public String getGenero() {
@@ -66,4 +66,5 @@ public class Paciente {
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
+
 }
