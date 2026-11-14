@@ -6,57 +6,59 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/cita-compuesto")
 public class Control {
 
     @Autowired
     private Servicio servicio;
 
-    // Endpoint Paso 1: Consultar Especialidades Médicas
-    @GetMapping("/especialidades")
+    // Paso 1: Consultar Especialidades Médicas
+    @GetMapping("/medicos/especialidades")
     public List<String> listarEspecialidades() {
         return servicio.listarEspecialidades();
     }
 
-    // Endpoint Paso 2: Consultar Médicos por Especialidad
-    @GetMapping("/medicos/{esp}")
-    public List<Medico> listarMedicosPorEspecialidad(@PathVariable String esp) {
-        return servicio.listarMedicosPorEspecialidad(esp);
+    // Paso 2: Consultar Médicos por Especialidad
+    @GetMapping("/medicos/especialidad/{especialidad}")
+    public List<Medico> listarMedicosPorEspecialidad(@PathVariable String especialidad) {
+        return servicio.listarMedicosPorEspecialidad(especialidad);
     }
 
-    // Endpoint Paso 3: Consultar Ficha del Médico (Datos del Médico + Lista de sus Horarios)
-    @PostMapping("/consultarFichaMedico")
-    public SalidaMedico consultarFichaMedico(@RequestBody EntradaMedico ent) {
-        return servicio.consultarFichaMedico(ent);
+    // Paso 3: Consultar Ficha del Médico (Datos del Médico + Lista de sus Horarios)
+    @GetMapping("/medicos/{idMedico}")
+    public SalidaMedico consultarFichaMedico(@PathVariable Long idMedico) {
+        return servicio.consultarFichaMedico(idMedico);
     }
 
-    // Endpoint Adicional Paso 3: Consultar Solo Horarios Disponibles del Médico
-    @GetMapping("/horariosDisponibles/{idMedico}")
+    // Paso 3 (Adicional): Consultar Solo Horarios Disponibles del Médico
+    @GetMapping("/horarios/disponibles/{idMedico}")
     public List<Horario> listarHorariosDisponibles(@PathVariable Long idMedico) {
         return servicio.listarHorariosDisponibles(idMedico);
     }
 
-    // Endpoint Paso 4: Validar Paciente por DNI
+    // Paso 4: Validar Paciente por DNI
     @PostMapping("/validarPaciente")
     public Paciente validarPaciente(@RequestBody EntradaPaciente ent) {
         return servicio.validarPaciente(ent != null ? ent.getDni() : null);
     }
 
-    // Endpoint Paso 5: Registrar Cita Médica (Genera Comprobante Detallado con Médico, Paciente y Horario)
-    @PostMapping("/registrarCita")
+    // Paso 5: Grabar Cita Médica (Genera Comprobante Detallado con Médico, Paciente y Horario)
+    @PostMapping("/citas/grabar")
     public SalidaCita registrarCita(@RequestBody EntradaCita ent) {
         return servicio.registrarCita(ent);
     }
 
-    // Endpoint: Consultar Cita Médica Detallada por su ID
-    @GetMapping("/cita/{idCita}")
+    // Consultar Cita Médica Detallada por su ID
+    @GetMapping("/citas/{idCita}")
     public SalidaCita buscarCita(@PathVariable Long idCita) {
         return servicio.buscarCita(idCita);
     }
 
-    // Endpoint: Consultar Citas Médicas Detalladas de un Paciente por DNI
+    // Consultar Citas Médicas Detalladas de un Paciente por DNI
     @GetMapping("/citas/dni/{dni}")
     public List<SalidaCita> buscarCitasPorDni(@PathVariable String dni) {
         return servicio.buscarCitasPorDni(dni);

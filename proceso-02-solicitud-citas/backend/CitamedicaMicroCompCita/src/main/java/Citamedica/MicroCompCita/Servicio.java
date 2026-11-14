@@ -35,25 +35,25 @@ public class Servicio {
     }
 
     // Endpoint Paso 3: Consultar Ficha del Médico (Médico + Horarios) componiendo MicroCatalogoMedico y MicroCatalogoHorario
-    public SalidaMedico consultarFichaMedico(EntradaMedico ent) {
-        if (ent == null || ent.getIdMedico() == null) {
+    public SalidaMedico consultarFichaMedico(Long idMedico) {
+        if (idMedico == null) {
             return null;
         }
 
         Medico med = rt.getForObject(
-            "http://MicroCatalogoMedico/buscar/" + ent.getIdMedico(),
+            "http://MicroCatalogoMedico/buscar/" + idMedico,
             Medico.class
         );
 
         Horario[] horarios = rt.getForObject(
-            "http://MicroCatalogoHorario/porMedico/" + ent.getIdMedico(),
+            "http://MicroCatalogoHorario/porMedico/" + idMedico,
             Horario[].class
         );
 
         List<Horario> listaHorarios = horarios != null ? Arrays.asList(horarios) : List.of();
 
         return new SalidaMedico(
-            ent.getIdMedico(),
+            idMedico,
             med != null ? med.getNombre() : "No encontrado",
             med != null ? med.getEspecialidad() : "",
             listaHorarios
