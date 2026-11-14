@@ -7,12 +7,12 @@ public class SalidaMedicoProgramado {
     private Long idMedico;
     private String nombre;
     private String especialidad;
-    private List<ProgramacionConFranjas> programacionesHorarias;
+    private List<SalidaProgramacion> programacionesHorarias;
 
     public SalidaMedicoProgramado() {
     }
 
-    public SalidaMedicoProgramado(Long idMedico, String nombre, String especialidad, List<ProgramacionConFranjas> programacionesHorarias) {
+    public SalidaMedicoProgramado(Long idMedico, String nombre, String especialidad, List<SalidaProgramacion> programacionesHorarias) {
         this.idMedico = idMedico;
         this.nombre = nombre;
         this.especialidad = especialidad;
@@ -43,11 +43,11 @@ public class SalidaMedicoProgramado {
         this.especialidad = especialidad;
     }
 
-    public List<ProgramacionConFranjas> getProgramacionesHorarias() {
+    public List<SalidaProgramacion> getProgramacionesHorarias() {
         return programacionesHorarias;
     }
 
-    public void setProgramacionesHorarias(List<ProgramacionConFranjas> programacionesHorarias) {
+    public void setProgramacionesHorarias(List<SalidaProgramacion> programacionesHorarias) {
         this.programacionesHorarias = programacionesHorarias;
     }
 }

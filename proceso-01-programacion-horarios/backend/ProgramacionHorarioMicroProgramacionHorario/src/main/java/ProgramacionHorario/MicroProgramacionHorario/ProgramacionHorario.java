@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
 
 @Entity
 public class ProgramacionHorario {
@@ -12,14 +13,14 @@ public class ProgramacionHorario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProgramacion;
     private Long idMedico;
-    private String fecha;
+    private LocalDate fecha;
     private String consultorio;
     private String estado;
 
     public ProgramacionHorario() {
     }
 
-    public ProgramacionHorario(Long idProgramacion, Long idMedico, String fecha, String consultorio, String estado) {
+    public ProgramacionHorario(Long idProgramacion, Long idMedico, LocalDate fecha, String consultorio, String estado) {
         this.idProgramacion = idProgramacion;
         this.idMedico = idMedico;
         this.fecha = fecha;
@@ -43,11 +44,11 @@ public class ProgramacionHorario {
         this.idMedico = idMedico;
     }
 
-    public String getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(String fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 

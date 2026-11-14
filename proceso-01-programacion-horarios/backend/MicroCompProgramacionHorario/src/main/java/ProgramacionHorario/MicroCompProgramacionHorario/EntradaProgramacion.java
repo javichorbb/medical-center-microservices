@@ -1,18 +1,22 @@
 package ProgramacionHorario.MicroCompProgramacionHorario;
 
+import java.time.LocalDate;
+
 public class EntradaProgramacion {
 
     private Long idMedico;
-    private String fecha;
+    private LocalDate fecha;
     private String consultorio;
+    private String estado;
 
     public EntradaProgramacion() {
     }
 
-    public EntradaProgramacion(Long idMedico, String fecha, String consultorio) {
+    public EntradaProgramacion(Long idMedico, LocalDate fecha, String consultorio, String estado) {
         this.idMedico = idMedico;
         this.fecha = fecha;
         this.consultorio = consultorio;
+        this.estado = estado;
     }
 
     public Long getIdMedico() {
@@ -23,11 +27,11 @@ public class EntradaProgramacion {
         this.idMedico = idMedico;
     }
 
-    public String getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(String fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
@@ -38,5 +42,12 @@ public class EntradaProgramacion {
     public void setConsultorio(String consultorio) {
         this.consultorio = consultorio;
     }
-}
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+}

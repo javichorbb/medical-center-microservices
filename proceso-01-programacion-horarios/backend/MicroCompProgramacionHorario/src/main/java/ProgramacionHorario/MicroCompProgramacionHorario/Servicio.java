@@ -57,7 +57,7 @@ public class Servicio {
             );
             if (medicos != null) {
                 for (Medico m : medicos) {
-                    List<ProgramacionConFranjas> progsConFranjas = obtenerProgramacionesConFranjasPorMedico(m.getIdMedico());
+                    List<SalidaProgramacion> progsConFranjas = obtenerProgramacionesConFranjasPorMedico(m.getIdMedico());
                     resultado.add(new SalidaMedicoProgramado(
                         m.getIdMedico(),
                         m.getNombre(),
@@ -113,52 +113,20 @@ public class Servicio {
 
         return new SalidaProgramacion(
             progGuardada.getIdProgramacion(),
+            progGuardada.getIdMedico(),
             progGuardada.getFecha(),
             progGuardada.getConsultorio(),
             progGuardada.getEstado(),
-            medico
+            List.of()
         );
     }
 
-    // 5. Crear Franja Horaria (1 a 1, máx 20 min)
-    public SalidaFranja registrarFranja(EntradaFranja ent) {
+    // 5. Crear Franja Horaria (1 a 1, máx 20 min) y retornar SalidaProgramacion actualizada
+    public SalidaProgramacion registrarFranja(EntradaFranja ent) {
         if (ent == null || ent.getIdProgramacion() == null) {
             return null;
         }
 
-        // 1. Obtener datos de la programación
-        ProgramacionHorario prog = null;
-        try {
-            prog = rt.getForObject(
-                "http://MICROPROGRAMACIONHORARIO/programaciones/" + ent.getIdProgramacion(),
-                ProgramacionHorario.class
-            );
-        } catch (Exception e) {
-            System.err.println("Error al obtener programacion: " + e.getMessage());
-        }
-
-        // 2. Obtener datos del médico asignado a esa programación
-        Medico medico = null;
-        if (prog != null && prog.getIdMedico() != null) {
-            try {
-                medico = rt.getForObject("http://MICROMEDICO/medicos/" + prog.getIdMedico(), Medico.class);
-            } catch (Exception e) {
-                System.err.println("Error al obtener medico: " + e.getMessage());
-            }
-        }
-
-        SalidaProgramacion salidaProg = null;
-        if (prog != null) {
-            salidaProg = new SalidaProgramacion(
-                prog.getIdProgramacion(),
-                prog.getFecha(),
-                prog.getConsultorio(),
-                prog.getEstado(),
-                medico
-            );
-        }
-
-        // 3. Guardar franja en MicroFranjaHoraria (valida <= 20 min)
         FranjaHoraria nuevaFranja = new FranjaHoraria(
             null,
             ent.getIdProgramacion(),
@@ -183,17 +151,11 @@ public class Servicio {
             return null;
         }
 
-        return new SalidaFranja(
-            franjaGuardada.getIdFranja(),
-            franjaGuardada.getHoraInicio(),
-            franjaGuardada.getHoraFin(),
-            franjaGuardada.getEstado(),
-            salidaProg
-        );
+        return buscarProgramacionPorId(franjaGuardada.getIdProgramacion());
     }
 
     // 6. Visualizar Programación por ID (con Médico y Franjas)
-    public SalidaDetalleProgramacion buscarProgramacionPorId(Long idProgramacion) {
+    public SalidaProgramacion buscarProgramacionPorId(Long idProgramacion) {
         if (idProgramacion == null) {
             return null;
         }
@@ -237,28 +199,29 @@ public class Servicio {
             System.err.println("Error al obtener franjas: " + e.getMessage());
         }
 
-        return new SalidaDetalleProgramacion(
+        return new SalidaProgramacion(
             prog.getIdProgramacion(),
+            prog.getIdMedico(),
             prog.getFecha(),
             prog.getConsultorio(),
             prog.getEstado(),
-            medico,
             franjas
         );
     }
 
     // 7. Editar Programación por ID (Devuelve la programación actualizada con médico y franjas)
-    public SalidaDetalleProgramacion actualizarProgramacion(Long idProgramacion, EntradaProgramacion ent) {
+    public SalidaProgramacion actualizarProgramacion(Long idProgramacion, EntradaProgramacion ent) {
         if (idProgramacion == null || ent == null) {
             return null;
         }
 
+        String estado = (ent.getEstado() != null && !ent.getEstado().isBlank()) ? ent.getEstado() : "ACTIVO";
         ProgramacionHorario progActualizar = new ProgramacionHorario(
             idProgramacion,
             ent.getIdMedico(),
             ent.getFecha(),
             ent.getConsultorio(),
-            "ACTIVO"
+            estado
         );
 
         try {
@@ -278,8 +241,8 @@ public class Servicio {
         return buscarProgramacionPorId(idProgramacion);
     }
 
-    // 8. Editar Franja Horaria por ID (Devuelve la franja con programación y médico)
-    public SalidaFranja actualizarFranja(Long idFranja, EntradaFranja ent) {
+    // 8. Editar Franja Horaria por ID (Devuelve SalidaProgramacion actualizada con médico y franjas)
+    public SalidaProgramacion actualizarFranja(Long idFranja, EntradaFranja ent) {
         if (idFranja == null || ent == null) {
             return null;
         }
@@ -311,55 +274,18 @@ public class Servicio {
             return null;
         }
 
-        // Componer la programación y médico
-        ProgramacionHorario prog = null;
-        try {
-            prog = rt.getForObject(
-                "http://MICROPROGRAMACIONHORARIO/programaciones/" + franjaActualizada.getIdProgramacion(),
-                ProgramacionHorario.class
-            );
-        } catch (Exception e) {
-            System.err.println("Error al obtener programacion: " + e.getMessage());
-        }
-
-        Medico medico = null;
-        if (prog != null && prog.getIdMedico() != null) {
-            try {
-                medico = rt.getForObject("http://MICROMEDICO/medicos/" + prog.getIdMedico(), Medico.class);
-            } catch (Exception e) {
-                System.err.println("Error al obtener medico: " + e.getMessage());
-            }
-        }
-
-        SalidaProgramacion salidaProg = null;
-        if (prog != null) {
-            salidaProg = new SalidaProgramacion(
-                prog.getIdProgramacion(),
-                prog.getFecha(),
-                prog.getConsultorio(),
-                prog.getEstado(),
-                medico
-            );
-        }
-
-        return new SalidaFranja(
-            franjaActualizada.getIdFranja(),
-            franjaActualizada.getHoraInicio(),
-            franjaActualizada.getHoraFin(),
-            franjaActualizada.getEstado(),
-            salidaProg
-        );
+        return buscarProgramacionPorId(franjaActualizada.getIdProgramacion());
     }
 
     // 9. Consultar Ficha Completa del Médico (Datos del Médico + Programaciones + Franjas)
-    public SalidaMedicoProgramado consultarFichaMedicoProgramado(EntradaMedico ent) {
-        if (ent == null || ent.getIdMedico() == null) {
+    public SalidaMedicoProgramado consultarFichaMedicoProgramado(Long idMedico) {
+        if (idMedico == null) {
             return null;
         }
 
         Medico medico = null;
         try {
-            medico = rt.getForObject("http://MICROMEDICO/medicos/" + ent.getIdMedico(), Medico.class);
+            medico = rt.getForObject("http://MICROMEDICO/medicos/" + idMedico, Medico.class);
         } catch (Exception e) {
             System.err.println("Error al obtener medico: " + e.getMessage());
             return null;
@@ -369,7 +295,7 @@ public class Servicio {
             return null;
         }
 
-        List<ProgramacionConFranjas> listaProgramaciones = obtenerProgramacionesConFranjasPorMedico(ent.getIdMedico());
+        List<SalidaProgramacion> listaProgramaciones = obtenerProgramacionesConFranjasPorMedico(idMedico);
         return new SalidaMedicoProgramado(
             medico.getIdMedico(),
             medico.getNombre(),
@@ -379,8 +305,8 @@ public class Servicio {
     }
 
     // Método auxiliar privado para reutilizar la consulta jerárquica de programaciones y franjas
-    private List<ProgramacionConFranjas> obtenerProgramacionesConFranjasPorMedico(Long idMedico) {
-        List<ProgramacionConFranjas> listaProgramaciones = new ArrayList<>();
+    private List<SalidaProgramacion> obtenerProgramacionesConFranjasPorMedico(Long idMedico) {
+        List<SalidaProgramacion> listaProgramaciones = new ArrayList<>();
         try {
             ProgramacionHorario[] progs = rt.getForObject(
                 "http://MICROPROGRAMACIONHORARIO/programaciones/medico/" + idMedico,
@@ -402,8 +328,9 @@ public class Servicio {
                         System.err.println("Error al obtener franjas de programacion " + p.getIdProgramacion() + ": " + e.getMessage());
                     }
 
-                    listaProgramaciones.add(new ProgramacionConFranjas(
+                    listaProgramaciones.add(new SalidaProgramacion(
                         p.getIdProgramacion(),
+                        p.getIdMedico(),
                         p.getFecha(),
                         p.getConsultorio(),
                         p.getEstado(),

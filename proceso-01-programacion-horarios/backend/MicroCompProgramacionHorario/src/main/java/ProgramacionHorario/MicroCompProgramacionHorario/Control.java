@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/programacion-compuesto")
 public class Control {
 
     @Autowired
@@ -33,39 +35,39 @@ public class Control {
         return servicio.listarMedicosPorEspecialidad(especialidad);
     }
 
-    // Paso 4: Registrar Cabecera de Programación de Horario (Devuelve datos con ID y Médico)
-    @PostMapping("/programaciones/grabar")
+    // Paso 4: Registrar Cabecera de Programación de Horario (Devuelve datos con ID, Médico y franjas vacías)
+    @PostMapping("/programacionesHorarias/grabar")
     public SalidaProgramacion registrarProgramacion(@RequestBody EntradaProgramacion ent) {
         return servicio.registrarProgramacion(ent);
     }
 
-    // Paso 5: Registrar Franja Horaria (1 a 1, máx 20 minutos; Devuelve Franja con Programación y Médico)
+    // Paso 5: Registrar Franja Horaria (1 a 1, máx 20 minutos; Devuelve SalidaProgramacion actualizada)
     @PostMapping("/franjas/grabar")
-    public SalidaFranja registrarFranja(@RequestBody EntradaFranja ent) {
+    public SalidaProgramacion registrarFranja(@RequestBody EntradaFranja ent) {
         return servicio.registrarFranja(ent);
     }
 
     // Paso 6: Visualizar Programación por ID (Incluye Médico y Lista de Franjas)
-    @GetMapping("/programaciones/{id}")
-    public SalidaDetalleProgramacion buscarProgramacionPorId(@PathVariable Long id) {
+    @GetMapping("/programacionesHorarias/{id}")
+    public SalidaProgramacion buscarProgramacionPorId(@PathVariable Long id) {
         return servicio.buscarProgramacionPorId(id);
     }
 
     // Paso 7: Editar Programación por ID (Devuelve Programación actualizada con Médico y Franjas)
-    @PutMapping("/programaciones/{id}")
-    public SalidaDetalleProgramacion actualizarProgramacion(@PathVariable Long id, @RequestBody EntradaProgramacion ent) {
+    @PutMapping("/programacionesHorarias/{id}")
+    public SalidaProgramacion actualizarProgramacion(@PathVariable Long id, @RequestBody EntradaProgramacion ent) {
         return servicio.actualizarProgramacion(id, ent);
     }
 
-    // Paso 8: Editar Franja Horaria por ID (Devuelve Franja actualizada con Programación y Médico)
+    // Paso 8: Editar Franja Horaria por ID (Devuelve SalidaProgramacion actualizada con Médico y Franjas)
     @PutMapping("/franjas/{id}")
-    public SalidaFranja actualizarFranja(@PathVariable Long id, @RequestBody EntradaFranja ent) {
+    public SalidaProgramacion actualizarFranja(@PathVariable Long id, @RequestBody EntradaFranja ent) {
         return servicio.actualizarFranja(id, ent);
     }
 
     // Paso 9: Consultar Ficha Completa del Médico (Datos del Médico + Todas sus Programaciones y Franjas)
-    @PostMapping("/consultarFichaMedicoProgramado")
-    public SalidaMedicoProgramado consultarFichaMedicoProgramado(@RequestBody EntradaMedico ent) {
-        return servicio.consultarFichaMedicoProgramado(ent);
+    @GetMapping("/medicos/{idMedico}")
+    public SalidaMedicoProgramado consultarFichaMedicoProgramado(@PathVariable Long idMedico) {
+        return servicio.consultarFichaMedicoProgramado(idMedico);
     }
 }

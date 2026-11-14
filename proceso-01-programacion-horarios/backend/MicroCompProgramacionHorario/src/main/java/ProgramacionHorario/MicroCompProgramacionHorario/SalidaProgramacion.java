@@ -1,22 +1,27 @@
 package ProgramacionHorario.MicroCompProgramacionHorario;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public class SalidaProgramacion {
 
     private Long idProgramacion;
-    private String fecha;
+    private Long idMedico;
+    private LocalDate fecha;
     private String consultorio;
     private String estado;
-    private Medico medico;
+    private List<FranjaHoraria> franjasHorarias;
 
     public SalidaProgramacion() {
     }
 
-    public SalidaProgramacion(Long idProgramacion, String fecha, String consultorio, String estado, Medico medico) {
+    public SalidaProgramacion(Long idProgramacion, Long idMedico, LocalDate fecha, String consultorio, String estado, List<FranjaHoraria> franjasHorarias) {
         this.idProgramacion = idProgramacion;
+        this.idMedico = idMedico;
         this.fecha = fecha;
         this.consultorio = consultorio;
         this.estado = estado;
-        this.medico = medico;
+        this.franjasHorarias = franjasHorarias;
     }
 
     public Long getIdProgramacion() {
@@ -27,11 +32,19 @@ public class SalidaProgramacion {
         this.idProgramacion = idProgramacion;
     }
 
-    public String getFecha() {
+    public Long getIdMedico() {
+        return idMedico;
+    }
+
+    public void setIdMedico(Long idMedico) {
+        this.idMedico = idMedico;
+    }
+
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(String fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
@@ -51,12 +64,11 @@ public class SalidaProgramacion {
         this.estado = estado;
     }
 
-    public Medico getMedico() {
-        return medico;
+    public List<FranjaHoraria> getFranjasHorarias() {
+        return franjasHorarias;
     }
 
-    public void setMedico(Medico medico) {
-        this.medico = medico;
+    public void setFranjasHorarias(List<FranjaHoraria> franjasHorarias) {
+        this.franjasHorarias = franjasHorarias;
     }
 }
-
