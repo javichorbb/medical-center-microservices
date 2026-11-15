@@ -36,7 +36,6 @@ A continuación se listan todos los microservicios backend del sistema con sus p
 |---|---|:---:|---|
 | **micro-atencion-compuesto** | Compuesto / Orquestador | `8036` | [http://localhost:8036/swagger-ui/index.html](http://localhost:8036/swagger-ui/index.html) |
 | **micro-medico** | Atómico (Catálogo) | `8031` | [http://localhost:8031/swagger-ui/index.html](http://localhost:8031/swagger-ui/index.html) |
-| **micro-historia** | Atómico (Referencial) | `8032` | [http://localhost:8032/swagger-ui/index.html](http://localhost:8032/swagger-ui/index.html) |
 | **micro-atencion** | Atómico (Transaccional) | `8033` | [http://localhost:8033/swagger-ui/index.html](http://localhost:8033/swagger-ui/index.html) |
 | **micro-medicamento** | Atómico (Catálogo) | `8034` | [http://localhost:8034/swagger-ui/index.html](http://localhost:8034/swagger-ui/index.html) |
 | **micro-analisis** | Atómico (Catálogo) | `8035` | [http://localhost:8035/swagger-ui/index.html](http://localhost:8035/swagger-ui/index.html) |
@@ -81,12 +80,11 @@ Requiere tener encendidos:
 1. `CentroMedicoEurekaServer` (Puerto `8761`) - Servidor de descubrimiento.
 2. `micro-atencion` (Puerto `8033`) - Persistencia de la atención médica, diagnóstico y tratamiento.
 3. `micro-medico` (Puerto `8031`) - Verificación y enriquecimiento del médico tratante.
-4. `micro-historia` (Puerto `8032`) - Verificación de la historia clínica referenciada.
-5. `micro-medicamento` (Puerto `8034`) - Catálogo de medicamentos para la receta médica.
-6. `micro-analisis` (Puerto `8035`) - Catálogo de tipos de análisis clínicos solicitados.
-7. `micro-cesta-receta` (Puerto `8038`) - Gestión temporal de medicamentos de la receta por número de atención.
-8. `micro-cesta-analisis` (Puerto `8039`) - Gestión temporal de análisis clínicos por número de atención.
-9. `micro-atencion-compuesto` (Puerto `8036`) - Servicio orquestador.
+4. `micro-medicamento` (Puerto `8034`) - Catálogo de medicamentos para la receta médica.
+5. `micro-analisis` (Puerto `8035`) - Catálogo de tipos de análisis clínicos solicitados.
+6. `micro-cesta-receta` (Puerto `8038`) - Gestión temporal de medicamentos de la receta por número de atención.
+7. `micro-cesta-analisis` (Puerto `8039`) - Gestión temporal de análisis clínicos por número de atención.
+8. `micro-atencion-compuesto` (Puerto `8036`) - Servicio orquestador.
 
 ### 4. Para Proceso 4 (`MicroHistoriaClinicaCompuesto` - Puerto `8049`)
 El servicio compuesto de historia clínica funciona de forma autónoma e independiente dentro de su propio paquete de microservicios. Requiere tener activos:
@@ -118,28 +116,28 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 
 #### 1. Autenticación de Personal Administrativo
 - **Método:** `POST`
-- **URL:** `http://localhost:8019/validarUsuario`
+- **URL:** `http://localhost:8019/programacion-compuesto/validarUsuario`
 - **Request Body (JSON):**
 ```json
 {
-  "username": "admin",
-  "password": "123"
+  "username": "acabrera",
+  "password": "123456"
 }
 ```
 
 #### 2. Consultar Especialidades Médicas
 - **Método:** `GET`
-- **URL:** `http://localhost:8019/medicos/especialidades`
+- **URL:** `http://localhost:8019/programacion-compuesto/medicos/especialidades`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 3. Consultar Médicos Programados por Especialidad (incluye programaciones y franjas)
 - **Método:** `GET`
-- **URL:** `http://localhost:8019/medicos/especialidad/Cardiologia`
+- **URL:** `http://localhost:8019/programacion-compuesto/medicos/especialidad/Cardiología`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 4. Registrar Cabecera de Programación de Horario
 - **Método:** `POST`
-- **URL:** `http://localhost:8019/programaciones/grabar`
+- **URL:** `http://localhost:8019/programacion-compuesto/programacionesHorarias/grabar`
 - **Request Body (JSON):**
 ```json
 {
@@ -151,7 +149,7 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 
 #### 5. Registrar Franja Horaria de Atención (intervalo máximo de 20 minutos)
 - **Método:** `POST`
-- **URL:** `http://localhost:8019/franjas/grabar`
+- **URL:** `http://localhost:8019/programacion-compuesto/franjas/grabar`
 - **Request Body (JSON):**
 ```json
 {
@@ -161,20 +159,15 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 }
 ```
 
-#### 6. Consultar Detalle de Programación por ID (con Médico y Franjas)
+#### 6. Consultar Detalle de Programación por ID (con `idMedico` y Franjas)
 - **Método:** `GET`
-- **URL:** `http://localhost:8019/programaciones/1`
+- **URL:** `http://localhost:8019/programacion-compuesto/programacionesHorarias/1`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 7. Consultar Ficha Completa del Médico Programado
-- **Método:** `POST`
-- **URL:** `http://localhost:8019/consultarFichaMedicoProgramado`
-- **Request Body (JSON):**
-```json
-{
-  "idMedico": 1
-}
-```
+- **Método:** `GET`
+- **URL:** `http://localhost:8019/programacion-compuesto/medicos/1`
+- **Request Body:** *(Sin cuerpo)*
 
 ---
 
@@ -185,32 +178,27 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 
 #### 1. Consultar Especialidades Médicas
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/especialidades`
+- **URL:** `http://localhost:8029/cita-compuesto/medicos/especialidades`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 2. Consultar Médicos por Especialidad
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/medicos/Cardiologia`
+- **URL:** `http://localhost:8029/cita-compuesto/medicos/especialidad/Cardiología`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 3. Consultar Ficha del Médico Seleccionado (Horarios, Fechas, Turnos y Consultorios)
-- **Método:** `POST`
-- **URL:** `http://localhost:8029/consultarFichaMedico`
-- **Request Body (JSON):**
-```json
-{
-  "idMedico": 1
-}
-```
+- **Método:** `GET`
+- **URL:** `http://localhost:8029/cita-compuesto/medicos/1`
+- **Request Body:** *(Sin cuerpo)*
 
 #### 4. Consultar Horarios Disponibles del Médico
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/horariosDisponibles/1`
+- **URL:** `http://localhost:8029/cita-compuesto/horarios/disponibles/1`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 5. Validar Paciente Previamente por DNI
 - **Método:** `POST`
-- **URL:** `http://localhost:8029/validarPaciente`
+- **URL:** `http://localhost:8029/cita-compuesto/validarPaciente`
 - **Request Body (JSON):**
 ```json
 {
@@ -220,7 +208,7 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 
 #### 6. Registrar Cita Médica
 - **Método:** `POST`
-- **URL:** `http://localhost:8029/registrarCita`
+- **URL:** `http://localhost:8029/cita-compuesto/citas/grabar`
 - **Request Body (JSON):**
 ```json
 {
@@ -231,12 +219,12 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 
 #### 7. Consultar Comprobante de Cita Médica por ID
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/cita/1`
+- **URL:** `http://localhost:8029/cita-compuesto/citas/1`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 8. Consultar Citas Reservadas por DNI del Paciente
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/citas/dni/12345678`
+- **URL:** `http://localhost:8029/cita-compuesto/citas/dni/12345678`
 - **Request Body:** *(Sin cuerpo)*
 
 ---
@@ -248,17 +236,17 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 
 #### 1. Consultar la Cita Médica a Atender (generada en Proceso 2)
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/cita/1`
+- **URL:** `http://localhost:8029/cita-compuesto/citas/1`
 - **Request Body:** *(Sin cuerpo)*
 
-#### 2. Consultar Catálogo de Medicamentos
+#### 2. Consultar Catálogo de Medicamentos (desde Compuesto)
 - **Método:** `GET`
-- **URL:** `http://localhost:8034/medicamento/listar`
+- **URL:** `http://localhost:8036/atencion-compuesto/medicamentos`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 3. Añadir Medicamento a la Receta Médica en Cesta (referencia: `AT-001`)
 - **Método:** `POST`
-- **URL:** `http://localhost:8038/cesta-receta/AT-001/agregar`
+- **URL:** `http://localhost:8036/atencion-compuesto/cesta-receta/AT-001/agregar`
 - **Request Body (JSON):**
 ```json
 {
@@ -268,14 +256,14 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 }
 ```
 
-#### 4. Consultar Catálogo de Tipos de Análisis Clínicos
+#### 4. Consultar Catálogo de Tipos de Análisis Clínicos (desde Compuesto)
 - **Método:** `GET`
-- **URL:** `http://localhost:8035/analisis/listar`
+- **URL:** `http://localhost:8036/atencion-compuesto/analisis`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 5. Añadir Análisis Clínico a la Orden en Cesta (referencia: `AT-001`)
 - **Método:** `POST`
-- **URL:** `http://localhost:8039/cesta-analisis/AT-001/agregar`
+- **URL:** `http://localhost:8036/atencion-compuesto/cesta-analisis/AT-001/agregar`
 - **Request Body (JSON):**
 ```json
 {
@@ -284,9 +272,9 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 }
 ```
 
-#### 6. Registrar Atención Médica Completa (asocia las cestas mediante `AT-001` y las vacía)
+#### 6. Grabar Atención Médica Completa (asocia las cestas mediante `AT-001` y las vacía)
 - **Método:** `POST`
-- **URL:** `http://localhost:8036/atencion-compuesto/registrar/AT-001`
+- **URL:** `http://localhost:8036/atencion-compuesto/atenciones/grabar/AT-001`
 - **Request Body (JSON):**
 ```json
 {
@@ -300,12 +288,12 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 
 #### 7. Consultar Atención Médica Enriquecida por su ID
 - **Método:** `GET`
-- **URL:** `http://localhost:8036/atencion-compuesto/buscar/1`
+- **URL:** `http://localhost:8036/atencion-compuesto/atenciones/1`
 - **Request Body:** *(Sin cuerpo)*
 
 #### 8. Consultar Atenciones Médicas por Número de Historia Clínica
 - **Método:** `GET`
-- **URL:** `http://localhost:8036/atencion-compuesto/historia/1`
+- **URL:** `http://localhost:8036/atencion-compuesto/atenciones/historia/1`
 - **Request Body:** *(Sin cuerpo)*
 
 ---
