@@ -12,14 +12,16 @@ public class Historia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idHistoria;
+    private Long idEnfermera;
     private Long idPaciente;
     private LocalDate fechaApertura;
 
     public Historia() {
     }
 
-    public Historia(Long idHistoria, Long idPaciente, LocalDate fechaApertura) {
+    public Historia(Long idHistoria, Long idEnfermera, Long idPaciente, LocalDate fechaApertura) {
         this.idHistoria = idHistoria;
+        this.idEnfermera = idEnfermera;
         this.idPaciente = idPaciente;
         this.fechaApertura = fechaApertura;
     }
@@ -30,6 +32,14 @@ public class Historia {
 
     public void setIdHistoria(Long idHistoria) {
         this.idHistoria = idHistoria;
+    }
+
+    public Long getIdEnfermera() {
+        return idEnfermera;
+    }
+
+    public void setIdEnfermera(Long idEnfermera) {
+        this.idEnfermera = idEnfermera;
     }
 
     public Long getIdPaciente() {

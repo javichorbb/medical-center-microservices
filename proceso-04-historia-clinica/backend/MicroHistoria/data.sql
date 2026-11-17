@@ -1,7 +1,6 @@
-INSERT INTO historia (id_historia, id_paciente, fecha_apertura) VALUES
-  (1, 1, '2026-10-01'),
-  (2, 2, '2026-10-05'),
-  (3, 3, '2026-10-10'),
-  (4, 4, '2026-10-12'),
-  (5, 5, '2026-10-15');
-
+INSERT INTO historia (id_historia, id_enfermera, id_paciente, fecha_apertura) VALUES
+  (1, 1, 1, '2026-10-01'),
+  (2, 2, 2, '2026-10-05'),
+  (3, 1, 3, '2026-10-10'),
+  (4, 3, 4, '2026-10-12'),
+  (5, 2, 5, '2026-10-15');

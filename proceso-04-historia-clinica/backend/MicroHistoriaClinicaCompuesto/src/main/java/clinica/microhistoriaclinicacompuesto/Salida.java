@@ -3,19 +3,28 @@ package clinica.microhistoriaclinicacompuesto;
 import java.time.LocalDate;
 import java.util.List;
 
-public class SalidaHistoria {
+public class Salida {
 
+    // 1. Datos generales de la Historia Clínica
     private Long idHistoria;
     private LocalDate fechaApertura;
-    private SalidaPaciente paciente;
+
+    // 2. Objeto 1: Enfermera que aperturó la historia (de MicroValidarEnfermera)
+    private Enfermera enfermera;
+
+    // 3. Objeto 2: Paciente titular de la historia (de MicroPaciente)
+    private Paciente paciente;
+
+    // 4. Objeto 3: Lista de Atenciones Médicas registradas (de MicroAtencionMedica)
     private List<AtencionMedica> atencionesMedicas;
 
-    public SalidaHistoria() {
+    public Salida() {
     }
 
-    public SalidaHistoria(Long idHistoria, LocalDate fechaApertura, SalidaPaciente paciente, List<AtencionMedica> atencionesMedicas) {
+    public Salida(Long idHistoria, LocalDate fechaApertura, Enfermera enfermera, Paciente paciente, List<AtencionMedica> atencionesMedicas) {
         this.idHistoria = idHistoria;
         this.fechaApertura = fechaApertura;
+        this.enfermera = enfermera;
         this.paciente = paciente;
         this.atencionesMedicas = atencionesMedicas;
     }
@@ -36,11 +45,19 @@ public class SalidaHistoria {
         this.fechaApertura = fechaApertura;
     }
 
-    public SalidaPaciente getPaciente() {
+    public Enfermera getEnfermera() {
+        return enfermera;
+    }
+
+    public void setEnfermera(Enfermera enfermera) {
+        this.enfermera = enfermera;
+    }
+
+    public Paciente getPaciente() {
         return paciente;
     }
 
-    public void setPaciente(SalidaPaciente paciente) {
+    public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
     }
 

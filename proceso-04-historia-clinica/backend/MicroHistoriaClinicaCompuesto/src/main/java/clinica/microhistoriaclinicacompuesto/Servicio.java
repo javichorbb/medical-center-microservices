@@ -1,187 +1,172 @@
 package clinica.microhistoriaclinicacompuesto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class Servicio {
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplate rt;
 
-    // 1. Validar / Login de Enfermera (Estilo Proceso 1: retorna SalidaEnfermera sin password o null)
-    public SalidaEnfermera validarEnfermera(EntradaEnfermera ent) {
-        if (ent == null || ent.getUsername() == null || ent.getPassword() == null) {
+    // 1. Grabar / Aperturar Historia Clínica (valida Enfermera y Paciente, crea Historia y retorna Salida consolidada)
+    public Salida grabarHistoria(Entrada ent) {
+        if (ent == null || ent.getIdEnfermera() == null || ent.getIdPaciente() == null) {
             return null;
         }
+
+        // Validar que la Enfermera exista en MicroValidarEnfermera
+        Enfermera enfermera = null;
         try {
-            Map<?, ?> enf = restTemplate.postForObject(
-                    "http://MICROVALIDARENFERMERA/validar",
-                    ent,
-                    Map.class
-            );
-            if (enf != null && enf.get("idEnfermera") != null) {
-                SalidaEnfermera salida = new SalidaEnfermera();
-                salida.setIdEnfermera(Long.valueOf(enf.get("idEnfermera").toString()));
-                salida.setNombre((String) enf.get("nombre"));
-                salida.setDni((String) enf.get("dni"));
-                salida.setUsername((String) enf.get("username"));
-                return salida;
-            }
+            enfermera = rt.getForObject("http://MICROVALIDARENFERMERA/enfermeras/" + ent.getIdEnfermera(), Enfermera.class);
         } catch (Exception e) {
             System.err.println("Error al validar enfermera: " + e.getMessage());
         }
-        return null;
-    }
-
-    // 2. Registrar Paciente en su Primera Cita y Generar su Historia Clínica
-    public SalidaHistoria registrarPaciente(EntradaPaciente ent) {
-        if (ent == null || ent.getDni() == null || ent.getDni().isBlank()) {
+        if (enfermera == null) {
             return null;
         }
 
-        // Verificar si el paciente ya existe por su DNI
-        Map<?, ?> pacienteExistente = consultarMicroservicio("http://MICROPACIENTE/pacientes/dni/" + ent.getDni());
-        if (pacienteExistente != null && pacienteExistente.get("idPaciente") != null) {
-            // Ya existe: no es su primera cita, devolvemos su historia completa existente
-            SalidaPaciente paciente = mapearSalidaPaciente(pacienteExistente);
-            return armarHistoriaCompleta(paciente.getIdPaciente(), paciente);
+        // Validar que el Paciente exista en MicroPaciente
+        Paciente paciente = null;
+        try {
+            paciente = rt.getForObject("http://MICROPACIENTE/pacientes/" + ent.getIdPaciente(), Paciente.class);
+        } catch (Exception e) {
+            System.err.println("Error al validar paciente: " + e.getMessage());
         }
-
-        // Si no existe, es su primera cita: Registrar nuevo paciente en MicroPaciente
-        Map<?, ?> nuevoPaciente = restTemplate.postForObject(
-                "http://MICROPACIENTE/pacientes/grabar",
-                ent,
-                Map.class
-        );
-
-        if (nuevoPaciente == null || nuevoPaciente.get("idPaciente") == null) {
+        if (paciente == null) {
             return null;
         }
 
-        SalidaPaciente pacienteGuardado = mapearSalidaPaciente(nuevoPaciente);
-        Long idPaciente = pacienteGuardado.getIdPaciente();
+        // Si el paciente ya tiene historia clínica aperturada, retornarla consolidada
+        try {
+            Historia existente = rt.getForObject("http://MICROHISTORIA/historia/paciente/" + ent.getIdPaciente(), Historia.class);
+            if (existente != null && existente.getIdHistoria() != null) {
+                return armarSalida(existente, null, paciente);
+            }
+        } catch (Exception ignored) {}
 
-        // Generar automáticamente su historia clínica en MicroHistoria (la fecha se asigna automáticamente)
-        EntradaHistoria entradaHistoria = new EntradaHistoria(idPaciente);
-        Map<?, ?> nuevaHistoria = restTemplate.postForObject(
+        // Registrar nueva Historia en MicroHistoria (idHistoria y fechaApertura automáticos)
+        Historia nuevaHistoria = new Historia(null, ent.getIdEnfermera(), ent.getIdPaciente(), LocalDate.now());
+        Historia historiaGuardada = null;
+        try {
+            historiaGuardada = rt.postForObject(
                 "http://MICROHISTORIA/historia/registrar",
-                entradaHistoria,
-                Map.class
-        );
-
-        Long idHistoria = null;
-        LocalDate fechaApertura = LocalDate.now();
-        if (nuevaHistoria != null && nuevaHistoria.get("idHistoria") != null) {
-            idHistoria = Long.valueOf(nuevaHistoria.get("idHistoria").toString());
-            fechaApertura = parsearFecha(nuevaHistoria.get("fechaApertura"));
-        }
-
-        // Retornar la nueva historia clínica aperturada (con lista de atenciones vacía)
-        return new SalidaHistoria(idHistoria, fechaApertura != null ? fechaApertura : LocalDate.now(), pacienteGuardado, List.of());
-    }
-
-    // 3. Obtener Historia Clínica Completa por DNI del Paciente
-    public SalidaHistoria obtenerHistoriaPorDni(String dni) {
-        if (dni == null || dni.isBlank()) {
+                nuevaHistoria,
+                Historia.class
+            );
+        } catch (Exception e) {
+            System.err.println("Error al registrar historia: " + e.getMessage());
             return null;
         }
 
-        Map<?, ?> datosPaciente = consultarMicroservicio("http://MICROPACIENTE/pacientes/dni/" + dni);
-        if (datosPaciente == null || datosPaciente.isEmpty() || datosPaciente.get("idPaciente") == null) {
+        if (historiaGuardada == null) {
             return null;
         }
 
-        SalidaPaciente paciente = mapearSalidaPaciente(datosPaciente);
-        return armarHistoriaCompleta(paciente.getIdPaciente(), paciente);
+        return armarSalida(historiaGuardada, enfermera, paciente);
     }
 
-    // 4. Obtener Historia Clínica Completa por ID de Paciente
-    public SalidaHistoria obtenerHistoriaPorPaciente(Long idPaciente) {
+    // 2. Consultar Historia Clínica consolidada por su ID de Historia
+    public Salida verSalida(Long idHistoria) {
+        if (idHistoria == null || idHistoria <= 0) {
+            return null;
+        }
+
+        Historia historia = null;
+        try {
+            historia = rt.getForObject("http://MICROHISTORIA/historia/buscar/" + idHistoria, Historia.class);
+        } catch (Exception e) {
+            System.err.println("Error al buscar historia por ID: " + e.getMessage());
+            return null;
+        }
+
+        if (historia == null) {
+            return null;
+        }
+
+        return armarSalida(historia, null, null);
+    }
+
+    // 3. Consultar Historia Clínica consolidada por ID de Paciente
+    public Salida buscarPorPaciente(Long idPaciente) {
         if (idPaciente == null || idPaciente <= 0) {
             return null;
         }
 
-        Map<?, ?> datosPaciente = consultarMicroservicio("http://MICROPACIENTE/pacientes/" + idPaciente);
-        if (datosPaciente == null || datosPaciente.isEmpty() || datosPaciente.get("idPaciente") == null) {
-            return null;
-        }
-
-        SalidaPaciente paciente = mapearSalidaPaciente(datosPaciente);
-        return armarHistoriaCompleta(idPaciente, paciente);
-    }
-
-    // Método orquestador que consolida Paciente + Historia + Atenciones de MicroAtencionMedica
-    private SalidaHistoria armarHistoriaCompleta(Long idPaciente, SalidaPaciente paciente) {
-        Map<?, ?> datosHistoria = consultarMicroservicio("http://MICROHISTORIA/historia/paciente/" + idPaciente);
-        if (datosHistoria == null || datosHistoria.isEmpty() || datosHistoria.get("idHistoria") == null) {
-            datosHistoria = consultarMicroservicio("http://micro-historia/historia/paciente/" + idPaciente);
-        }
-
-        if (datosHistoria == null || datosHistoria.isEmpty() || datosHistoria.get("idHistoria") == null) {
-            return new SalidaHistoria(null, null, paciente, List.of());
-        }
-
-        Long idHistoria = Long.valueOf(datosHistoria.get("idHistoria").toString());
-        LocalDate fechaApertura = parsearFecha(datosHistoria.get("fechaApertura"));
-
-        // Consultar atenciones médicas al microservicio local MicroAtencionMedica
-        List<AtencionMedica> atenciones = consultarAtencionesMedicas(idHistoria);
-
-        return new SalidaHistoria(idHistoria, fechaApertura, paciente, atenciones);
-    }
-
-    private List<AtencionMedica> consultarAtencionesMedicas(Long idHistoria) {
+        Historia historia = null;
         try {
-            AtencionMedica[] atenciones = restTemplate.getForObject(
-                    "http://MICROATENCIONMEDICA/atencion/historia/" + idHistoria,
-                    AtencionMedica[].class
-            );
-            return atenciones != null ? Arrays.asList(atenciones) : List.of();
-        } catch (RestClientException ex) {
-            try {
-                AtencionMedica[] atenciones = restTemplate.getForObject(
-                        "http://MicroAtencionMedica/atencion/historia/" + idHistoria,
-                        AtencionMedica[].class
-                );
-                return atenciones != null ? Arrays.asList(atenciones) : List.of();
-            } catch (RestClientException ignored) {
-                return List.of();
-            }
-        }
-    }
-
-    private SalidaPaciente mapearSalidaPaciente(Map<?, ?> raw) {
-        SalidaPaciente p = new SalidaPaciente();
-        p.setIdPaciente(Long.valueOf(raw.get("idPaciente").toString()));
-        p.setNombre((String) raw.get("nombre"));
-        p.setDni((String) raw.get("dni"));
-        p.setGenero((String) raw.get("genero"));
-        p.setTelefono((String) raw.get("telefono"));
-        return p;
-    }
-
-    private LocalDate parsearFecha(Object val) {
-        if (val == null) return null;
-        try {
-            return LocalDate.parse(val.toString());
+            historia = rt.getForObject("http://MICROHISTORIA/historia/paciente/" + idPaciente, Historia.class);
         } catch (Exception e) {
+            System.err.println("Error al buscar historia por paciente: " + e.getMessage());
             return null;
         }
+
+        if (historia == null) {
+            return null;
+        }
+
+        return armarSalida(historia, null, null);
     }
 
-    private Map<?, ?> consultarMicroservicio(String url) {
+    // 4. Listar Todas las Historias Clínicas consolidadas
+    public List<Salida> listarTodas() {
+        List<Salida> resultado = new ArrayList<>();
         try {
-            return restTemplate.getForObject(url, Map.class);
-        } catch (RestClientException ex) {
-            return null;
+            Historia[] historias = rt.getForObject("http://MICROHISTORIA/historia/listar", Historia[].class);
+            if (historias != null) {
+                for (Historia h : historias) {
+                    Salida s = armarSalida(h, null, null);
+                    if (s != null) {
+                        resultado.add(s);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar todas las historias: " + e.getMessage());
         }
+        return resultado;
+    }
+
+    // Helper para componer Salida usando exclusivamente los IDs almacenados en Historia
+    private Salida armarSalida(Historia historia, Enfermera enfermeraPreCargada, Paciente pacientePreCargado) {
+        Enfermera enfermera = enfermeraPreCargada;
+        if (enfermera == null && historia.getIdEnfermera() != null) {
+            try {
+                enfermera = rt.getForObject("http://MICROVALIDARENFERMERA/enfermeras/" + historia.getIdEnfermera(), Enfermera.class);
+            } catch (Exception ignored) {}
+        }
+
+        Paciente paciente = pacientePreCargado;
+        if (paciente == null && historia.getIdPaciente() != null) {
+            try {
+                paciente = rt.getForObject("http://MICROPACIENTE/pacientes/" + historia.getIdPaciente(), Paciente.class);
+            } catch (Exception ignored) {}
+        }
+
+        List<AtencionMedica> atenciones = List.of();
+        if (historia.getIdHistoria() != null) {
+            try {
+                AtencionMedica[] arr = rt.getForObject(
+                    "http://MICROATENCIONMEDICA/atencion/historia/" + historia.getIdHistoria(),
+                    AtencionMedica[].class
+                );
+                if (arr != null) {
+                    atenciones = Arrays.asList(arr);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        return new Salida(
+            historia.getIdHistoria(),
+            historia.getFechaApertura(),
+            enfermera,
+            paciente,
+            atenciones
+        );
     }
 }

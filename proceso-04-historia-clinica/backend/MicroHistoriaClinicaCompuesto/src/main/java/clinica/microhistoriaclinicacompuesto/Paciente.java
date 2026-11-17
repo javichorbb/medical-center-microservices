@@ -1,6 +1,6 @@
 package clinica.microhistoriaclinicacompuesto;
 
-public class SalidaPaciente {
+public class Paciente {
 
     private Long idPaciente;
     private String nombre;
@@ -8,10 +8,10 @@ public class SalidaPaciente {
     private String genero;
     private String telefono;
 
-    public SalidaPaciente() {
+    public Paciente() {
     }
 
-    public SalidaPaciente(Long idPaciente, String nombre, String dni, String genero, String telefono) {
+    public Paciente(Long idPaciente, String nombre, String dni, String genero, String telefono) {
         this.idPaciente = idPaciente;
         this.nombre = nombre;
         this.dni = dni;
@@ -59,4 +59,3 @@ public class SalidaPaciente {
         this.telefono = telefono;
     }
 }
-
