@@ -10,11 +10,15 @@ public class Servicio {
     @Autowired
     private Repositorio repositorio;
 
-    public Paciente validar(EntradaPaciente entrada) {
-        if (entrada == null || entrada.getDni() == null) {
+    public Paciente grabar(Paciente p) {
+        return repositorio.save(p);
+    }
+
+    public Paciente validar(EntradaPaciente ent) {
+        if (ent == null || ent.getDni() == null) {
             return null;
         }
-        return repositorio.findByDni(entrada.getDni().trim()).orElse(null);
+        return repositorio.findByDni(ent.getDni().trim()).orElse(null);
     }
 
     public Paciente buscarPorDni(String dni) {
@@ -24,11 +28,11 @@ public class Servicio {
         return repositorio.findByDni(dni.trim()).orElse(null);
     }
 
-    public Paciente buscarPorId(Long id) {
-        if (id == null) {
+    public Paciente buscarPorId(Long idPaciente) {
+        if (idPaciente == null) {
             return null;
         }
-        return repositorio.findById(id).orElse(null);
+        return repositorio.findById(idPaciente).orElse(null);
     }
 
     public List<Paciente> listar() {

@@ -1,14 +1,14 @@
 package Citamedica.MicroCompCita;
 
-public class EntradaCita {
+public class Entrada {
 
     private Long idHorario;
     private Long idPaciente;
 
-    public EntradaCita() {
+    public Entrada() {
     }
 
-    public EntradaCita(Long idHorario, Long idPaciente) {
+    public Entrada(Long idHorario, Long idPaciente) {
         this.idHorario = idHorario;
         this.idPaciente = idPaciente;
     }

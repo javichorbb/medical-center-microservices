@@ -1,6 +1,6 @@
 package Citamedica.MicroCompCita;
 
-public class SalidaCita {
+public class Salida {
 
     private Long idCita;
     private String estado;
@@ -8,10 +8,10 @@ public class SalidaCita {
     private Medico medico;
     private Horario horario;
 
-    public SalidaCita() {
+    public Salida() {
     }
 
-    public SalidaCita(Long idCita, String estado, Paciente paciente, Medico medico, Horario horario) {
+    public Salida(Long idCita, String estado, Paciente paciente, Medico medico, Horario horario) {
         this.idCita = idCita;
         this.estado = estado;
         this.paciente = paciente;

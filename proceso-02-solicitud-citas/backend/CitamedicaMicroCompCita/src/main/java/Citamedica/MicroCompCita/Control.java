@@ -16,51 +16,32 @@ public class Control {
     @Autowired
     private Servicio servicio;
 
-    // Paso 1: Consultar Especialidades Médicas
+    // 1. Grabar Cita Médica (recibe Entrada y devuelve Salida consolidada)
+    @PostMapping("/grabar")
+    public Salida grabarCita(@RequestBody Entrada ent) {
+        return servicio.grabarCita(ent);
+    }
+
+    // 2. Consultar Cita Médica por ID (devuelve Salida consolidada)
+    @GetMapping("/buscar/{id}")
+    public Salida verSalida(@PathVariable Long id) {
+        return servicio.verSalida(id);
+    }
+
+    // 3. Listar Todas las Citas Médicas consolidadas
+    @GetMapping("/listar")
+    public List<Salida> listarTodas() {
+        return servicio.listarTodas();
+    }
+
+    // 4. Consultas de apoyo de médicos y especialidades
     @GetMapping("/medicos/especialidades")
     public List<String> listarEspecialidades() {
         return servicio.listarEspecialidades();
     }
 
-    // Paso 2: Consultar Médicos por Especialidad
     @GetMapping("/medicos/especialidad/{especialidad}")
     public List<Medico> listarMedicosPorEspecialidad(@PathVariable String especialidad) {
         return servicio.listarMedicosPorEspecialidad(especialidad);
-    }
-
-    // Paso 3: Consultar Ficha del Médico (Datos del Médico + Lista de sus Horarios)
-    @GetMapping("/medicos/{idMedico}")
-    public SalidaMedico consultarFichaMedico(@PathVariable Long idMedico) {
-        return servicio.consultarFichaMedico(idMedico);
-    }
-
-    // Paso 3 (Adicional): Consultar Solo Horarios Disponibles del Médico
-    @GetMapping("/horarios/disponibles/{idMedico}")
-    public List<Horario> listarHorariosDisponibles(@PathVariable Long idMedico) {
-        return servicio.listarHorariosDisponibles(idMedico);
-    }
-
-    // Paso 4: Validar Paciente por DNI
-    @PostMapping("/validarPaciente")
-    public Paciente validarPaciente(@RequestBody EntradaPaciente ent) {
-        return servicio.validarPaciente(ent != null ? ent.getDni() : null);
-    }
-
-    // Paso 5: Grabar Cita Médica (Genera Comprobante Detallado con Médico, Paciente y Horario)
-    @PostMapping("/citas/grabar")
-    public SalidaCita registrarCita(@RequestBody EntradaCita ent) {
-        return servicio.registrarCita(ent);
-    }
-
-    // Consultar Cita Médica Detallada por su ID
-    @GetMapping("/citas/{idCita}")
-    public SalidaCita buscarCita(@PathVariable Long idCita) {
-        return servicio.buscarCita(idCita);
-    }
-
-    // Consultar Citas Médicas Detalladas de un Paciente por DNI
-    @GetMapping("/citas/dni/{dni}")
-    public List<SalidaCita> buscarCitasPorDni(@PathVariable String dni) {
-        return servicio.buscarCitasPorDni(dni);
     }
 }

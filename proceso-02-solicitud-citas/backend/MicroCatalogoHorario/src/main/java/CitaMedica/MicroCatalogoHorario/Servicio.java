@@ -10,19 +10,24 @@ public class Servicio {
     @Autowired
     private Repositorio repositorio;
 
+    // Grabar horario
+    public Horario grabar(Horario h) {
+        return repositorio.save(h);
+    }
+
     // Buscar horario por ID
-    public Horario buscar(Long id) {
-        return repositorio.findById(id).orElse(null);
+    public Horario buscar(Long idHorario) {
+        return repositorio.findById(idHorario).orElse(null);
     }
 
     // Solo horarios disponibles (para reservar)
-    public List<Horario> listarDisponibles(Long idMed) {
-        return repositorio.findByIdMedicoAndEstado(idMed, "DISPONIBLE");
+    public List<Horario> listarDisponibles(Long idMedico) {
+        return repositorio.findByIdMedicoAndEstado(idMedico, "DISPONIBLE");
     }
 
     // Todos los horarios del médico sin importar el estado
-    public List<Horario> listarPorMedico(Long idMed) {
-        return repositorio.findByIdMedico(idMed);
+    public List<Horario> listarPorMedico(Long idMedico) {
+        return repositorio.findByIdMedico(idMedico);
     }
 
     // Listar todos los horarios registrados en el sistema

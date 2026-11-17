@@ -14,6 +14,11 @@ public class Control {
     @Autowired
     private Servicio servicio;
 
+    @PostMapping("/grabar")
+    public Paciente grabar(@RequestBody Paciente p) {
+        return servicio.grabar(p);
+    }
+
     // 1. Valida enviando { "dni": "..." } y retorna el paciente (o null si no existe)
     @PostMapping("/validar")
     public Paciente validar(@RequestBody EntradaPaciente entrada) {

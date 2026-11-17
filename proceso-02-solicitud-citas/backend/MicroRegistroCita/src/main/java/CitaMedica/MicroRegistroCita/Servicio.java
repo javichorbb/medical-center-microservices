@@ -19,7 +19,7 @@ public class Servicio {
         return repositorio.findAll();
     }
 
-    public CitaMedica buscar(Long id) {
-        return repositorio.findById(id).orElse(null);
+    public CitaMedica buscar(Long idCita) {
+        return repositorio.findById(idCita).orElse(null);
     }
 }

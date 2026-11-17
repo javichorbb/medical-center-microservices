@@ -10,6 +10,10 @@ public class Servicio {
     @Autowired
     private Repositorio repositorio;
 
+    public Medico grabar(Medico m) {
+        return repositorio.save(m);
+    }
+
     public Medico buscar(Long idMedico) {
         return repositorio.findById(idMedico).orElse(null);
     }
