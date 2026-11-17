@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,57 +16,27 @@ public class Control {
     @Autowired
     private Servicio servicio;
 
-    // Paso 1: Autenticación / Login de Usuario Asistencial o Administrador
-    @PostMapping("/validarUsuario")
-    public SalidaUsuario validarUsuario(@RequestBody EntradaUsuario ent) {
-        return servicio.validarUsuario(ent);
+    // 1. Grabar Programación de Horario (recibe Entrada y devuelve Salida consolidada)
+    @PostMapping("/grabar")
+    public Salida grabarProgramacion(@RequestBody Entrada ent) {
+        return servicio.grabarProgramacion(ent);
     }
 
-    // Paso 2: Consultar Lista de Especialidades Médicas
-    @GetMapping("/medicos/especialidades")
-    public List<String> listarEspecialidades() {
-        return servicio.listarEspecialidades();
+    // 2. Consultar Programación de Horario por ID (devuelve Salida consolidada con sus franjas)
+    @GetMapping("/buscar/{id}")
+    public Salida verSalida(@PathVariable Long id) {
+        return servicio.verSalida(id);
     }
 
-    // Paso 3: Consultar Médicos Programados por Especialidad (con su programación y franjas)
-    @GetMapping("/medicos/especialidad/{especialidad}")
-    public List<SalidaMedicoProgramado> listarMedicosPorEspecialidad(@PathVariable String especialidad) {
-        return servicio.listarMedicosPorEspecialidad(especialidad);
+    // 3. Consultar Programaciones de Horarios por Especialidad Médica
+    @GetMapping("/especialidad/{especialidad}")
+    public List<Salida> listarPorEspecialidad(@PathVariable String especialidad) {
+        return servicio.listarPorEspecialidad(especialidad);
     }
 
-    // Paso 4: Registrar Cabecera de Programación de Horario (Devuelve datos con ID, Médico y franjas vacías)
-    @PostMapping("/programacionesHorarias/grabar")
-    public SalidaProgramacion registrarProgramacion(@RequestBody EntradaProgramacion ent) {
-        return servicio.registrarProgramacion(ent);
-    }
-
-    // Paso 5: Registrar Franja Horaria (1 a 1, máx 20 minutos; Devuelve SalidaProgramacion actualizada)
-    @PostMapping("/franjas/grabar")
-    public SalidaProgramacion registrarFranja(@RequestBody EntradaFranja ent) {
-        return servicio.registrarFranja(ent);
-    }
-
-    // Paso 6: Visualizar Programación por ID (Incluye Médico y Lista de Franjas)
-    @GetMapping("/programacionesHorarias/{id}")
-    public SalidaProgramacion buscarProgramacionPorId(@PathVariable Long id) {
-        return servicio.buscarProgramacionPorId(id);
-    }
-
-    // Paso 7: Editar Programación por ID (Devuelve Programación actualizada con Médico y Franjas)
-    @PutMapping("/programacionesHorarias/{id}")
-    public SalidaProgramacion actualizarProgramacion(@PathVariable Long id, @RequestBody EntradaProgramacion ent) {
-        return servicio.actualizarProgramacion(id, ent);
-    }
-
-    // Paso 8: Editar Franja Horaria por ID (Devuelve SalidaProgramacion actualizada con Médico y Franjas)
-    @PutMapping("/franjas/{id}")
-    public SalidaProgramacion actualizarFranja(@PathVariable Long id, @RequestBody EntradaFranja ent) {
-        return servicio.actualizarFranja(id, ent);
-    }
-
-    // Paso 9: Consultar Ficha Completa del Médico (Datos del Médico + Todas sus Programaciones y Franjas)
-    @GetMapping("/medicos/{idMedico}")
-    public SalidaMedicoProgramado consultarFichaMedicoProgramado(@PathVariable Long idMedico) {
-        return servicio.consultarFichaMedicoProgramado(idMedico);
+    // 4. Listar Todas las Programaciones de Horarios del Sistema
+    @GetMapping("/listar")
+    public List<Salida> listarTodas() {
+        return servicio.listarTodas();
     }
 }

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class ProgramacionHorario {
 
     private Long idProgramacion;
+    private Long idUsuario;
     private Long idMedico;
     private LocalDate fecha;
     private String consultorio;
@@ -13,8 +14,9 @@ public class ProgramacionHorario {
     public ProgramacionHorario() {
     }
 
-    public ProgramacionHorario(Long idProgramacion, Long idMedico, LocalDate fecha, String consultorio, String estado) {
+    public ProgramacionHorario(Long idProgramacion, Long idUsuario, Long idMedico, LocalDate fecha, String consultorio, String estado) {
         this.idProgramacion = idProgramacion;
+        this.idUsuario = idUsuario;
         this.idMedico = idMedico;
         this.fecha = fecha;
         this.consultorio = consultorio;
@@ -27,6 +29,14 @@ public class ProgramacionHorario {
 
     public void setIdProgramacion(Long idProgramacion) {
         this.idProgramacion = idProgramacion;
+    }
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public Long getIdMedico() {
@@ -61,4 +71,3 @@ public class ProgramacionHorario {
         this.estado = estado;
     }
 }
-
