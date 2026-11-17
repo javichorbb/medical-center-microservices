@@ -1,16 +1,16 @@
 package pe.edu.utp.microatencioncompuesto;
 
-public class SalidaAnalisisItem {
+public class AnalisisCesta {
 
     private Long idAnalisis;
     private String descripcion;
     private String tipo;
     private String indicacion;
 
-    public SalidaAnalisisItem() {
+    public AnalisisCesta() {
     }
 
-    public SalidaAnalisisItem(Long idAnalisis, String descripcion, String tipo, String indicacion) {
+    public AnalisisCesta(Long idAnalisis, String descripcion, String tipo, String indicacion) {
         this.idAnalisis = idAnalisis;
         this.descripcion = descripcion;
         this.tipo = tipo;

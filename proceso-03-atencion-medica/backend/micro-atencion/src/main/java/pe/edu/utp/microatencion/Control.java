@@ -14,32 +14,17 @@ public class Control {
     private Servicio servicio;
 
     @PostMapping("/grabar")
-    public AtencionMedica grabar(@RequestBody AtencionMedica atencion) {
-        return servicio.grabar(atencion);
-    }
-
-    @GetMapping("/buscar/{idAtencion}")
-    public AtencionMedica buscar(@PathVariable Long idAtencion) {
-        return servicio.buscar(idAtencion);
-    }
-
-    @GetMapping("/listar")
-    public List<AtencionMedica> listar() {
-        return servicio.listar();
-    }
-
-    @PostMapping("/grabar-completa")
-    public ResultadoAtencion grabarCompleta(@RequestBody EntradaAtencion dto) {
+    public ResultadoAtencion grabar(@RequestBody EntradaAtencion dto) {
         try {
-            return servicio.grabarCompleta(dto);
+            return servicio.grabar(dto);
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
         }
     }
 
-    @GetMapping("/buscar-completa/{idAtencion}")
-    public ResultadoAtencion buscarCompleta(@PathVariable Long idAtencion) {
-        return servicio.buscarCompleta(idAtencion);
+    @GetMapping("/buscar/{idAtencion}")
+    public ResultadoAtencion buscar(@PathVariable Long idAtencion) {
+        return servicio.buscar(idAtencion);
     }
 
     @GetMapping("/historia/{idHistoria}")
@@ -47,13 +32,8 @@ public class Control {
         return servicio.buscarPorHistoria(idHistoria);
     }
 
-    @GetMapping("/cita/{idCita}")
-    public ResultadoAtencion buscarPorCita(@PathVariable Long idCita) {
-        return servicio.buscarPorCita(idCita);
-    }
-
-    @GetMapping("/listar-completas")
-    public List<ResultadoAtencion> listarCompletas() {
-        return servicio.listarCompletas();
+    @GetMapping("/listar")
+    public List<ResultadoAtencion> listar() {
+        return servicio.listar();
     }
 }

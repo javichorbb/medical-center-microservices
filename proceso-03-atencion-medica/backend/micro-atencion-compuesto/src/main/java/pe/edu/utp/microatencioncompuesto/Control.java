@@ -11,85 +11,56 @@ public class Control {
     @Autowired
     private Servicio servicio;
 
-    // 1. CATÁLOGOS (Médicos, Medicamentos y Tipos de Análisis)
-    @GetMapping("/medicos")
-    public List<Medico> listarMedicos() {
-        return servicio.listarMedicos();
+    // 1. CESTA DE RECETA MÉDICA
+    @PostMapping("/cesta-receta/agregar")
+    public List<MedicamentoCesta> agregarMedicamento(@RequestBody Entrada ent) {
+        return servicio.agregarMedicamento(ent);
     }
 
-    @GetMapping("/medicamentos")
-    public List<Medicamento> listarMedicamentos() {
-        return servicio.listarMedicamentos();
+    @GetMapping("/cesta-receta")
+    public List<MedicamentoCesta> verCestaReceta() {
+        return servicio.verCestaReceta();
     }
 
-    @GetMapping("/analisis")
-    public List<AnalisisClinico> listarAnalisis() {
-        return servicio.listarAnalisis();
+    @DeleteMapping("/cesta-receta/quitar/{idMedicamento}")
+    public List<MedicamentoCesta> quitarMedicamento(@PathVariable Long idMedicamento) {
+        return servicio.quitarMedicamento(idMedicamento);
     }
 
-    // 2. CESTA DE RECETA MÉDICA EN MEMORIA (Devuelve ítems enriquecidos)
-    @PostMapping("/cesta-receta/{idAtencion}/agregar")
-    public List<SalidaRecetaItem> agregarMedicamento(
-            @PathVariable String idAtencion,
-            @RequestBody EntradaReceta item) {
-        return servicio.agregarMedicamentoCesta(idAtencion, item);
+    // 2. CESTA DE ANÁLISIS CLÍNICOS
+    @PostMapping("/cesta-analisis/agregar")
+    public List<AnalisisCesta> agregarAnalisis(@RequestBody Entrada ent) {
+        return servicio.agregarAnalisis(ent);
     }
 
-    @GetMapping("/cesta-receta/{idAtencion}")
-    public List<SalidaRecetaItem> listarCestaReceta(@PathVariable String idAtencion) {
-        return servicio.listarCestaReceta(idAtencion);
+    @GetMapping("/cesta-analisis")
+    public List<AnalisisCesta> verCestaAnalisis() {
+        return servicio.verCestaAnalisis();
     }
 
-    @DeleteMapping("/cesta-receta/{idAtencion}/quitar/{idMedicamento}")
-    public List<SalidaRecetaItem> quitarMedicamento(
-            @PathVariable String idAtencion,
-            @PathVariable Long idMedicamento) {
-        return servicio.quitarMedicamentoCesta(idAtencion, idMedicamento);
+    @DeleteMapping("/cesta-analisis/quitar/{idAnalisis}")
+    public List<AnalisisCesta> quitarAnalisis(@PathVariable Long idAnalisis) {
+        return servicio.quitarAnalisis(idAnalisis);
     }
 
-    // 3. CESTA DE ANÁLISIS CLÍNICOS EN MEMORIA (Devuelve ítems enriquecidos)
-    @PostMapping("/cesta-analisis/{idAtencion}/agregar")
-    public List<SalidaAnalisisItem> agregarAnalisis(
-            @PathVariable String idAtencion,
-            @RequestBody EntradaAnalisis item) {
-        return servicio.agregarAnalisisCesta(idAtencion, item);
+    // 3. ATENCIÓN MÉDICA (Grabar, Buscar, Historia, Listar)
+    @PostMapping("/grabar")
+    public Salida grabarAtencion(@RequestBody Entrada ent) {
+        return servicio.grabarAtencion(ent);
     }
 
-    @GetMapping("/cesta-analisis/{idAtencion}")
-    public List<SalidaAnalisisItem> listarCestaAnalisis(@PathVariable String idAtencion) {
-        return servicio.listarCestaAnalisis(idAtencion);
+    @GetMapping("/buscar/{id}")
+    public Salida verSalida(@PathVariable Long id) {
+        return servicio.verSalida(id);
     }
 
-    @DeleteMapping("/cesta-analisis/{idAtencion}/quitar/{idAnalisis}")
-    public List<SalidaAnalisisItem> quitarAnalisis(
-            @PathVariable String idAtencion,
-            @PathVariable Long idAnalisis) {
-        return servicio.quitarAnalisisCesta(idAtencion, idAnalisis);
-    }
-
-    // 4. GRABAR ATENCIÓN MÉDICA COMPLETA CON CESTAS (Receta y Análisis)
-    @PostMapping("/atenciones/grabar/{idAtencion}")
-    public SalidaAtencion registrar(
-            @PathVariable String idAtencion,
-            @RequestBody EntradaAtencion entrada) {
-        return servicio.registrarAtencion(idAtencion, entrada);
-    }
-
-    // 5. BUSCAR ATENCIÓN MÉDICA ENRIQUECIDA POR SU ID
-    @GetMapping("/atenciones/{idAtencion}")
-    public SalidaAtencion buscar(@PathVariable Long idAtencion) {
-        return servicio.buscarCompleta(idAtencion);
-    }
-
-    // 6. BUSCAR TODAS LAS ATENCIONES POR HISTORIA CLÍNICA (Para Proceso 4)
-    @GetMapping("/atenciones/historia/{idHistoria}")
-    public List<SalidaAtencion> buscarPorHistoria(@PathVariable Long idHistoria) {
+    @GetMapping("/historia/{idHistoria}")
+    public List<Salida> buscarPorHistoria(@PathVariable Long idHistoria) {
         return servicio.buscarPorHistoria(idHistoria);
     }
 
-    // 7. LISTAR TODAS LAS ATENCIONES REGISTRADAS
-    @GetMapping("/atenciones")
-    public List<SalidaAtencion> listar() {
-        return servicio.listarCompletas();
+    @GetMapping("/listar")
+    public List<Salida> listarTodas() {
+        return servicio.listarTodas();
     }
 }

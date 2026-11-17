@@ -1,5 +1,6 @@
 package pe.edu.utp.microcestaanalisis;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,46 +8,31 @@ import org.springframework.stereotype.Service;
 @Service
 public class Servicio {
 
+    private List<AnalisisCesta> cesta = new ArrayList<>();
+
     @Autowired
     private Repositorio repo;
 
-    private void validarOperacion(String operacionId) {
-        if (operacionId == null
-                || operacionId.isBlank()
-                || operacionId.length() > 100
-                || !operacionId.matches("[a-zA-Z0-9_-]+")) {
-            throw new IllegalArgumentException("Identificador de operacion invalido");
-        }
+    public List<AnalisisCesta> agregar(AnalisisCesta item) {
+        cesta = repo.getCesta();
+        cesta.removeIf(a -> a.getIdAnalisis() != null && a.getIdAnalisis().equals(item.getIdAnalisis()));
+        cesta.add(item);
+        return cesta;
     }
 
-    public AnalisisCesta agregar(String operacionId, AnalisisCesta item) {
-        validarOperacion(operacionId);
-
-        if (item == null || item.getIdAnalisis() == null || item.getIdAnalisis() <= 0) {
-            throw new IllegalArgumentException("Codigo de analisis invalido");
-        }
-        if (item.getIndicacion() == null || item.getIndicacion().isBlank()) {
-            throw new IllegalArgumentException("La indicacion es obligatoria");
-        }
-
-        return repo.agregar(operacionId, item);
+    public List<AnalisisCesta> quitar(Long idAnalisis) {
+        cesta = repo.getCesta();
+        cesta.removeIf(a -> a.getIdAnalisis() != null && a.getIdAnalisis().equals(idAnalisis));
+        return cesta;
     }
 
-    public boolean quitar(String operacionId, Long idAnalisis) {
-        validarOperacion(operacionId);
-        if (idAnalisis == null || idAnalisis <= 0) {
-            throw new IllegalArgumentException("Codigo de analisis invalido");
-        }
-        return repo.quitar(operacionId, idAnalisis);
+    public List<AnalisisCesta> listar() {
+        cesta = repo.getCesta();
+        return cesta;
     }
 
-    public List<AnalisisCesta> listar(String operacionId) {
-        validarOperacion(operacionId);
-        return repo.listar(operacionId);
-    }
-
-    public void limpiar(String operacionId) {
-        validarOperacion(operacionId);
-        repo.limpiar(operacionId);
+    public void limpiar() {
+        cesta = repo.getCesta();
+        cesta.clear();
     }
 }

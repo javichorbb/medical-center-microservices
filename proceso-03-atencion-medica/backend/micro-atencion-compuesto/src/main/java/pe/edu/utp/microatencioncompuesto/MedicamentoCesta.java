@@ -1,6 +1,6 @@
 package pe.edu.utp.microatencioncompuesto;
 
-public class SalidaRecetaItem {
+public class MedicamentoCesta {
 
     private Long idMedicamento;
     private String nombre;
@@ -8,10 +8,10 @@ public class SalidaRecetaItem {
     private String dosis;
     private Integer cantidad;
 
-    public SalidaRecetaItem() {
+    public MedicamentoCesta() {
     }
 
-    public SalidaRecetaItem(Long idMedicamento, String nombre, String presentacion, String dosis, Integer cantidad) {
+    public MedicamentoCesta(Long idMedicamento, String nombre, String presentacion, String dosis, Integer cantidad) {
         this.idMedicamento = idMedicamento;
         this.nombre = nombre;
         this.presentacion = presentacion;

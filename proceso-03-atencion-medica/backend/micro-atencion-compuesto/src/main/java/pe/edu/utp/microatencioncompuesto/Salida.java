@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public class SalidaAtencion {
+public class Salida {
 
     private Long idAtencion;
     private Long idCita;
@@ -14,18 +14,18 @@ public class SalidaAtencion {
     private String diagnostico;
     private String tratamiento;
     private Medico medico;
-    private List<SalidaRecetaItem> recetaMedica;
-    private List<SalidaAnalisisItem> analisisClinicos;
+    private List<MedicamentoCesta> recetaMedica;
+    private List<AnalisisCesta> analisisClinicos;
 
-    public SalidaAtencion() {
+    public Salida() {
     }
 
-    public SalidaAtencion(Long idAtencion, Long idCita, Long idHistoria,
-                          LocalDate fecha, LocalTime hora,
-                          String diagnostico, String tratamiento,
-                          Medico medico,
-                          List<SalidaRecetaItem> recetaMedica,
-                          List<SalidaAnalisisItem> analisisClinicos) {
+    public Salida(Long idAtencion, Long idCita, Long idHistoria,
+                  LocalDate fecha, LocalTime hora,
+                  String diagnostico, String tratamiento,
+                  Medico medico,
+                  List<MedicamentoCesta> recetaMedica,
+                  List<AnalisisCesta> analisisClinicos) {
         this.idAtencion = idAtencion;
         this.idCita = idCita;
         this.idHistoria = idHistoria;
@@ -102,19 +102,19 @@ public class SalidaAtencion {
         this.medico = medico;
     }
 
-    public List<SalidaRecetaItem> getRecetaMedica() {
+    public List<MedicamentoCesta> getRecetaMedica() {
         return recetaMedica;
     }
 
-    public void setRecetaMedica(List<SalidaRecetaItem> recetaMedica) {
+    public void setRecetaMedica(List<MedicamentoCesta> recetaMedica) {
         this.recetaMedica = recetaMedica;
     }
 
-    public List<SalidaAnalisisItem> getAnalisisClinicos() {
+    public List<AnalisisCesta> getAnalisisClinicos() {
         return analisisClinicos;
     }
 
-    public void setAnalisisClinicos(List<SalidaAnalisisItem> analisisClinicos) {
+    public void setAnalisisClinicos(List<AnalisisCesta> analisisClinicos) {
         this.analisisClinicos = analisisClinicos;
     }
 }

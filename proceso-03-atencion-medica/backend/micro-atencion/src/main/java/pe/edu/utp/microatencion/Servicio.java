@@ -24,20 +24,8 @@ public class Servicio {
     @Autowired
     private RepositorioAnalisis repoAnalisis;
 
-    public AtencionMedica grabar(AtencionMedica atencion) {
-        return repo.save(atencion);
-    }
-
-    public AtencionMedica buscar(Long idAtencion) {
-        return repo.findById(idAtencion).orElse(null);
-    }
-
-    public List<AtencionMedica> listar() {
-        return repo.findAll();
-    }
-
     @Transactional
-    public ResultadoAtencion grabarCompleta(EntradaAtencion dto) {
+    public ResultadoAtencion grabar(EntradaAtencion dto) {
         if (dto == null
                 || dto.getIdMedico() == null || dto.getIdMedico() <= 0
                 || dto.getIdHistoria() == null || dto.getIdHistoria() <= 0) {
@@ -111,7 +99,7 @@ public class Servicio {
     }
 
     @Transactional(readOnly = true)
-    public ResultadoAtencion buscarCompleta(Long idAtencion) {
+    public ResultadoAtencion buscar(Long idAtencion) {
         AtencionMedica atencion = repo.findById(idAtencion).orElse(null);
         if (atencion == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La atención médica no existe");
@@ -125,13 +113,7 @@ public class Servicio {
     }
 
     @Transactional(readOnly = true)
-    public ResultadoAtencion buscarPorCita(Long idCita) {
-        AtencionMedica atencion = repo.findByIdCita(idCita).orElse(null);
-        return atencion != null ? armarResultado(atencion) : null;
-    }
-
-    @Transactional(readOnly = true)
-    public List<ResultadoAtencion> listarCompletas() {
+    public List<ResultadoAtencion> listar() {
         return armarListaResultados(repo.findAll());
     }
 
