@@ -114,59 +114,33 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 > **Descripción del negocio:**  
 > El personal administrativo elabora la programación de horarios para la atención médica (especialidad, médicos, fechas de atención, consultorio de atención, franjas horarias en intervalos de 20 minutos como máximo). Asimismo, elabora la consulta por especialidad mostrando los médicos programados, su programación por fecha y tiempos de atención.
 
-#### 1. Autenticación de Personal Administrativo
+#### 1. Registrar Nueva Programación de Horario (retorna `Salida` consolidada con `franjasHorarias: []`)
 - **Método:** `POST`
-- **URL:** `http://localhost:8019/programacion-compuesto/validarUsuario`
+- **URL:** `http://localhost:8019/programacion-compuesto/grabar`
 - **Request Body (JSON):**
 ```json
 {
-  "username": "acabrera",
-  "password": "123456"
-}
-```
-
-#### 2. Consultar Especialidades Médicas
-- **Método:** `GET`
-- **URL:** `http://localhost:8019/programacion-compuesto/medicos/especialidades`
-- **Request Body:** *(Sin cuerpo)*
-
-#### 3. Consultar Médicos Programados por Especialidad (incluye programaciones y franjas)
-- **Método:** `GET`
-- **URL:** `http://localhost:8019/programacion-compuesto/medicos/especialidad/Cardiología`
-- **Request Body:** *(Sin cuerpo)*
-
-#### 4. Registrar Cabecera de Programación de Horario
-- **Método:** `POST`
-- **URL:** `http://localhost:8019/programacion-compuesto/programacionesHorarias/grabar`
-- **Request Body (JSON):**
-```json
-{
+  "idUsuario": 1,
   "idMedico": 1,
-  "fecha": "2026-11-20",
-  "consultorio": "Consultorio 101"
+  "fecha": "2026-11-25",
+  "consultorio": "Consultorio 105"
 }
 ```
+*(Valida `Usuario` y `Medico`, genera el `idProgramacion` y estado `"ACTIVO"` automáticamente, y devuelve la `Salida` lista para asociarle franjas horarias en `MicroFranjaHoraria`).*
 
-#### 5. Registrar Franja Horaria de Atención (intervalo máximo de 20 minutos)
-- **Método:** `POST`
-- **URL:** `http://localhost:8019/programacion-compuesto/franjas/grabar`
-- **Request Body (JSON):**
-```json
-{
-  "idProgramacion": 1,
-  "horaInicio": "08:00",
-  "horaFin": "08:20"
-}
-```
-
-#### 6. Consultar Detalle de Programación por ID (con `idMedico` y Franjas)
+#### 2. Consultar Programación de Horario por ID (Ver `Salida` completa con franjas)
 - **Método:** `GET`
-- **URL:** `http://localhost:8019/programacion-compuesto/programacionesHorarias/1`
+- **URL:** `http://localhost:8019/programacion-compuesto/buscar/1`
 - **Request Body:** *(Sin cuerpo)*
 
-#### 7. Consultar Ficha Completa del Médico Programado
+#### 3. Consultar Programaciones por Especialidad Médica (incluye médico, horario y franjas)
 - **Método:** `GET`
-- **URL:** `http://localhost:8019/programacion-compuesto/medicos/1`
+- **URL:** `http://localhost:8019/programacion-compuesto/especialidad/Medicina General`
+- **Request Body:** *(Sin cuerpo)*
+
+#### 4. Listar Todas las Programaciones de Horarios
+- **Método:** `GET`
+- **URL:** `http://localhost:8019/programacion-compuesto/listar`
 - **Request Body:** *(Sin cuerpo)*
 
 ---
@@ -186,29 +160,9 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 - **URL:** `http://localhost:8029/cita-compuesto/medicos/especialidad/Cardiología`
 - **Request Body:** *(Sin cuerpo)*
 
-#### 3. Consultar Ficha del Médico Seleccionado (Horarios, Fechas, Turnos y Consultorios)
-- **Método:** `GET`
-- **URL:** `http://localhost:8029/cita-compuesto/medicos/1`
-- **Request Body:** *(Sin cuerpo)*
-
-#### 4. Consultar Horarios Disponibles del Médico
-- **Método:** `GET`
-- **URL:** `http://localhost:8029/cita-compuesto/horarios/disponibles/1`
-- **Request Body:** *(Sin cuerpo)*
-
-#### 5. Validar Paciente Previamente por DNI
+#### 3. Registrar Cita Médica (retorna `Salida` consolidada con `paciente`, `medico` y `horario`)
 - **Método:** `POST`
-- **URL:** `http://localhost:8029/cita-compuesto/validarPaciente`
-- **Request Body (JSON):**
-```json
-{
-  "dni": "12345678"
-}
-```
-
-#### 6. Registrar Cita Médica
-- **Método:** `POST`
-- **URL:** `http://localhost:8029/cita-compuesto/citas/grabar`
+- **URL:** `http://localhost:8029/cita-compuesto/grabar`
 - **Request Body (JSON):**
 ```json
 {
@@ -216,15 +170,16 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
   "idPaciente": 1
 }
 ```
+*(Valida `Horario` y `Paciente`, genera el `idCita` y estado `"RESERVADA"` automáticamente, y devuelve la `Salida` completa).*
 
-#### 7. Consultar Comprobante de Cita Médica por ID
+#### 4. Consultar Comprobante de Cita Médica por ID
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/cita-compuesto/citas/1`
+- **URL:** `http://localhost:8029/cita-compuesto/buscar/1`
 - **Request Body:** *(Sin cuerpo)*
 
-#### 8. Consultar Citas Reservadas por DNI del Paciente
+#### 5. Listar Todas las Citas Médicas
 - **Método:** `GET`
-- **URL:** `http://localhost:8029/cita-compuesto/citas/dni/12345678`
+- **URL:** `http://localhost:8029/cita-compuesto/listar`
 - **Request Body:** *(Sin cuerpo)*
 
 ---
@@ -234,19 +189,9 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 > **Descripción del negocio:**  
 > El médico consulta la cita médica, se genera la atención médica y examina al paciente. Registra el diagnóstico y tratamiento. A dicha ficha se le añaden la receta de medicamentos y/o análisis clínicos. La referencia utilizada es el número de atención médica. Para la receta, selecciona medicamentos del catálogo; para los análisis, selecciona del catálogo de tipos de análisis. Al finalizar, registra la atención médica completa.
 
-#### 1. Consultar la Cita Médica a Atender (generada en Proceso 2)
-- **Método:** `GET`
-- **URL:** `http://localhost:8029/cita-compuesto/citas/1`
-- **Request Body:** *(Sin cuerpo)*
-
-#### 2. Consultar Catálogo de Medicamentos (desde Compuesto)
-- **Método:** `GET`
-- **URL:** `http://localhost:8036/atencion-compuesto/medicamentos`
-- **Request Body:** *(Sin cuerpo)*
-
-#### 3. Añadir Medicamento a la Receta Médica en Cesta (referencia: `AT-001`)
+#### 1. Añadir Medicamento a la Receta Médica en Cesta
 - **Método:** `POST`
-- **URL:** `http://localhost:8036/atencion-compuesto/cesta-receta/AT-001/agregar`
+- **URL:** `http://localhost:8036/atencion-compuesto/cesta-receta/agregar`
 - **Request Body (JSON):**
 ```json
 {
@@ -256,14 +201,9 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 }
 ```
 
-#### 4. Consultar Catálogo de Tipos de Análisis Clínicos (desde Compuesto)
-- **Método:** `GET`
-- **URL:** `http://localhost:8036/atencion-compuesto/analisis`
-- **Request Body:** *(Sin cuerpo)*
-
-#### 5. Añadir Análisis Clínico a la Orden en Cesta (referencia: `AT-001`)
+#### 2. Añadir Análisis Clínico a la Orden en Cesta
 - **Método:** `POST`
-- **URL:** `http://localhost:8036/atencion-compuesto/cesta-analisis/AT-001/agregar`
+- **URL:** `http://localhost:8036/atencion-compuesto/cesta-analisis/agregar`
 - **Request Body (JSON):**
 ```json
 {
@@ -272,9 +212,9 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 }
 ```
 
-#### 6. Grabar Atención Médica Completa (asocia las cestas mediante `AT-001` y las vacía)
+#### 3. Grabar Atención Médica Completa (`fecha` y `hora` automáticas, asocia las cestas y las vacía)
 - **Método:** `POST`
-- **URL:** `http://localhost:8036/atencion-compuesto/atenciones/grabar/AT-001`
+- **URL:** `http://localhost:8036/atencion-compuesto/grabar`
 - **Request Body (JSON):**
 ```json
 {
@@ -286,14 +226,19 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 }
 ```
 
-#### 7. Consultar Atención Médica Enriquecida por su ID
+#### 4. Consultar Atención Médica Enriquecida por su ID
 - **Método:** `GET`
-- **URL:** `http://localhost:8036/atencion-compuesto/atenciones/1`
+- **URL:** `http://localhost:8036/atencion-compuesto/buscar/1`
 - **Request Body:** *(Sin cuerpo)*
 
-#### 8. Consultar Atenciones Médicas por Número de Historia Clínica
+#### 5. Consultar Atenciones Médicas por Número de Historia Clínica
 - **Método:** `GET`
-- **URL:** `http://localhost:8036/atencion-compuesto/atenciones/historia/1`
+- **URL:** `http://localhost:8036/atencion-compuesto/historia/1`
+- **Request Body:** *(Sin cuerpo)*
+
+#### 6. Listar Todas las Atenciones Médicas
+- **Método:** `GET`
+- **URL:** `http://localhost:8036/atencion-compuesto/listar`
 - **Request Body:** *(Sin cuerpo)*
 
 ---
@@ -303,37 +248,29 @@ A continuación se detallan las solicitudes exactas para probar los 4 flujos de 
 > **Descripción del negocio:**  
 > Para ser atendido el paciente, la enfermera registra sus datos personales siempre y cuando sea su primera cita médica, generándose de esta manera su historia clínica. Esta contiene el historial de atenciones médicas del paciente; toda esta información se requiere conocer.
 
-#### 1. Autenticación / Login de la Enfermera
+#### 1. Aperturar / Grabar Historia Clínica (retorna `Salida` consolidada con `enfermera`, `paciente` y `atencionesMedicas`)
 - **Método:** `POST`
-- **URL:** `http://localhost:8049/historia-compuesto/validarEnfermera`
+- **URL:** `http://localhost:8049/historia-compuesto/grabar`
 - **Request Body (JSON):**
 ```json
 {
-  "username": "enfermera.ana",
-  "password": "123"
+  "idEnfermera": 1,
+  "idPaciente": 1
 }
 ```
+*(Valida `Enfermera` y `Paciente`, genera el `idHistoria` y `fechaApertura` automáticamente, y devuelve la `Salida` completa).*
 
-#### 2. Registrar Paciente en su Primera Cita Médica y Aperturar Historia Clínica
-*(Si el paciente ya existe por su DNI, no se duplica: el sistema recupera su expediente y su historial existente).*
-- **Método:** `POST`
-- **URL:** `http://localhost:8049/historia-compuesto/registrarPaciente`
-- **Request Body (JSON):**
-```json
-{
-  "dni": "72345678",
-  "nombre": "Carlos Alberto Mendoza",
-  "genero": "MASCULINO",
-  "telefono": "987654321"
-}
-```
-
-#### 3. Consultar Historia Clínica Completa por DNI del Paciente (incluye paciente + fecha de apertura + historial de atenciones médicas con recetas y análisis clínicos)
+#### 2. Consultar Historia Clínica Completa por ID de Historia
 - **Método:** `GET`
-- **URL:** `http://localhost:8049/historia-compuesto/dni/72345678`
+- **URL:** `http://localhost:8049/historia-compuesto/buscar/1`
 - **Request Body:** *(Sin cuerpo)*
 
-#### 4. Consultar Historia Clínica Completa por ID de Paciente
+#### 3. Consultar Historia Clínica Completa por ID de Paciente
 - **Método:** `GET`
 - **URL:** `http://localhost:8049/historia-compuesto/paciente/1`
+- **Request Body:** *(Sin cuerpo)*
+
+#### 4. Listar Todas las Historias Clínicas
+- **Método:** `GET`
+- **URL:** `http://localhost:8049/historia-compuesto/listar`
 - **Request Body:** *(Sin cuerpo)*
